@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+:root {
+  --slate-ink: #30cdea;
+  --slate-blue: #30cdea;
+  --slate-blue-soft: #7ee5f4;
+  --slate-purple: #e2bdf4;
+  --slate-yellow: #ecad0a;
+  --slate-gray: #888888;
+  --slate-navy: #08114f;
+  --slate-navy-soft: #13206f;
+  --slate-cream: #f7fbff;
+  --slate-cream-strong: #ffffff;
+  --slate-panel: rgba(8, 17, 79, 0.82);
+  --slate-panel-strong: rgba(11, 23, 98, 0.94);
+  --slate-card: rgba(247, 251, 255, 0.92);
+  --slate-card-hover: rgba(255, 255, 255, 0.98);
+  --slate-line: rgba(8, 17, 79, 0.14);
+  --slate-shadow: 0 24px 80px rgba(5, 20, 71, 0.18);
+  --background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.22), transparent 24%),
+    radial-gradient(circle at 85% 18%, rgba(226, 189, 244, 0.2), transparent 22%),
+    linear-gradient(180deg, #63ddf1 0%, #30cdea 52%, #1ec4df 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--slate-ink);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background);
+  font-family: var(--font-sans), sans-serif;
+  color: var(--slate-navy);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(8, 17, 79, 0.18);
+}

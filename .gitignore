@@ -1,0 +1,14 @@
+.next
+coverage
+node_modules
+playwright-report
+test-results
+*.log
+.env.local
+.env*.local
+.env
+.DS_Store
+
+
+CLAUDE.md
+AGENTS.md
