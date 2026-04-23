@@ -1,14 +1,38 @@
-.next
-coverage
+# Dependencies
 node_modules
+package-lock.json
+
+# Next.js
+.next
+out
+build
+dist
+*.tsbuildinfo
+
+# Testing
+coverage
 playwright-report
 test-results
-*.log
+vitest.config.ts
+
+# Environment (never commit secrets)
+.env
 .env.local
 .env*.local
-.env
+
+# Logs
+*.log
+
+# OS
 .DS_Store
+Thumbs.db
 
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
 
+# Misc (agent context files)
 CLAUDE.md
 AGENTS.md
