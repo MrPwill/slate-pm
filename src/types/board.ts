@@ -7,6 +7,7 @@ export type Card = {
 export type Column = {
   id: string;
   title: string;
+  description?: string;
   cards: Card[];
 };
 
@@ -15,9 +16,14 @@ export type CardLocation = {
   index: number;
 };
 
+export type AiTask = {
+  title: string;
+  details: string;
+};
+
 export type AiTaskResponse = {
   summary: string;
-  tasks: string[];
+  tasks: AiTask[];
 };
 
 export type CompletedRecord = {

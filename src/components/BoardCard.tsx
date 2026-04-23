@@ -10,14 +10,67 @@ type BoardCardProps = {
   isOverlay?: boolean;
 };
 
+function parseCardSections(details: string): { title: string; details: string }[] {
+  const lines = details.split("\n").filter((line) => line.trim());
+  const numberedSections: { title: string; details: string }[] = [];
+  let currentTitle = "";
+  let currentDetails: string[] = [];
+
+  for (const line of lines) {
+    const numberedMatch = line.match(/^(\d+[\.)]\s*)(.+)$/);
+    if (numberedMatch) {
+      if (currentTitle) {
+        numberedSections.push({ title: currentTitle, details: currentDetails.join("\n") });
+      }
+      currentTitle = numberedMatch[2].trim();
+      currentDetails = [];
+    } else if (currentTitle) {
+      currentDetails.push(line.replace(/^[-*]\s*/, ""));
+    } else {
+      const dashMatch = line.match(/^[-*]\s*(.+)$/);
+      if (dashMatch) {
+        currentTitle = dashMatch[1].trim();
+        currentDetails = [];
+      }
+    }
+  }
+
+  if (currentTitle) {
+    numberedSections.push({ title: currentTitle, details: currentDetails.join("\n") });
+  }
+
+  return numberedSections;
+}
+
 export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps) {
   const columns = useBoardStore((state) => state.columns);
+  const addCard = useBoardStore((state) => state.addCard);
   const deleteCard = useBoardStore((state) => state.deleteCard);
   const updateCard = useBoardStore((state) => state.updateCard);
   const moveCard = useBoardStore((state) => state.moveCard);
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(card.title);
   const [details, setDetails] = useState(card.details);
+
+  const canSplit = !isEditing && parseCardSections(card.details).length > 1;
+
+  const handleSplit = () => {
+    const sections = parseCardSections(card.details);
+    if (sections.length <= 1) return;
+
+    const columnIndex = columns.findIndex((col) => col.id === columnId);
+    if (columnIndex < 0) return;
+
+    sections.forEach((section, idx) => {
+      addCard(columnId, {
+        id: crypto.randomUUID(),
+        title: section.title,
+        details: section.details,
+      });
+    });
+
+    deleteCard(columnId, card.id);
+  };
 
   const columnIndex = columns.findIndex((column) => column.id === columnId);
   const currentColumn = columnIndex >= 0 ? columns[columnIndex] : null;
@@ -117,7 +170,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-[var(--slate-navy)]">{card.title}</h3>
-            <p className="text-sm leading-6 text-[var(--slate-navy)]/58">{card.details || "No details"}</p>
+            <p className="whitespace-pre-line text-sm leading-6 text-[var(--slate-navy)]/58">{card.details || "No details"}</p>
             {!isOverlay ? (
               <div className="flex flex-wrap gap-1 pt-1">
                 <button
@@ -157,6 +210,16 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
           </div>
           {!isOverlay ? (
             <div className="flex shrink-0 gap-1">
+              {canSplit && (
+                <button
+                  type="button"
+                  aria-label={`Split ${card.title}`}
+                  className="rounded-full px-2 py-1 text-xs font-semibold text-[var(--slate-blue)] transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-blue)]"
+                  onClick={handleSplit}
+                >
+                  Split
+                </button>
+              )}
               <button
                 type="button"
                 aria-label={`Edit ${card.title}`}

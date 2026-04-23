@@ -207,10 +207,13 @@ export function BoardApp() {
               </div>
             </div>
             <div className="space-y-4">
-              <AiTaskPanel />
               <CompletedHistoryPanel />
             </div>
           </div>
+        </section>
+
+        <section className="w-full">
+          <AiTaskPanel />
         </section>
 
         <DndContext

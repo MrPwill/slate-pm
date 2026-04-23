@@ -4,6 +4,7 @@ import { create, type StateCreator } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createInitialColumns } from "@/lib/seed";
 import type {
+  AiTask,
   AuthResult,
   Card,
   CardLocation,
@@ -27,7 +28,7 @@ export type BoardState = {
   updateCard: (columnId: string, cardId: string, updates: Pick<Card, "title" | "details">) => void;
   moveCard: (source: CardLocation, destination: CardLocation) => void;
   renameColumn: (columnId: string, title: string) => void;
-  addGeneratedCards: (columnId: string, titles: string[]) => void;
+  addGeneratedCards: (columnId: string, tasks: AiTask[]) => void;
   deleteCompletedRecord: (recordId: string) => void;
   resetBoard: () => void;
   resetApp: () => void;
@@ -313,7 +314,7 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
           state.completedRecords,
         ),
       ),
-    addGeneratedCards: (columnId, titles) =>
+    addGeneratedCards: (columnId, tasks) =>
       set((state) => {
         const nextColumns = state.columns.map((column) =>
           column.id === columnId
@@ -321,10 +322,10 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
                 ...column,
                 cards: [
                   ...column.cards,
-                  ...titles.map((title) => ({
+                  ...tasks.map((task) => ({
                     id: crypto.randomUUID(),
-                    title,
-                    details: "",
+                    title: task.title,
+                    details: task.details,
                   })),
                 ],
               }

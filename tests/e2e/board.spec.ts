@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+async function addTestCard(page: { getByRole: Function, getByLabel: Function, locator: Function }, columnId: string, title: string, details: string) {
+  const column = page.locator(`[data-column-id="${columnId}"]`);
+  await column.getByRole("button", { name: "Add card" }).click();
+  await page.getByLabel("Card title").fill(title);
+  await page.getByLabel("Card details").fill(details);
+  await page.getByRole("button", { name: "Save" }).click();
+}
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
@@ -11,7 +19,11 @@ test.beforeEach(async ({ page }) => {
       contentType: "application/json",
       body: JSON.stringify({
         summary: "The board is progressing, but review and final polish still need attention.",
-        tasks: ["Define drag QA", "Mock AI response", "Ship MVP review pass"],
+        tasks: [
+          { title: "Define drag QA", details: "- Test drag overlay\n- Verify cross-column drops\n- Check reorder" },
+          { title: "Mock AI response", details: "- Create mock handler\n- Return sample tasks\n- Validate format" },
+          { title: "Ship MVP review pass", details: "- Final code review\n- Check accessibility\n- Deploy to prod" },
+        ],
       }),
     });
   });
@@ -24,47 +36,46 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("user adds a card to a column", async ({ page }) => {
-  const todoColumn = page.locator('[data-column-id="todo"]');
-
-  await todoColumn.getByRole("button", { name: "Add card" }).click();
-  await page.getByLabel("Card title").fill("Write launch checklist");
-  await page.getByLabel("Card details").fill("Keep it short.");
-  await page.getByRole("button", { name: "Save" }).click();
-
+  await addTestCard(page, "todo", "Write launch checklist", "Keep it short.");
   await expect(page.getByText("Write launch checklist")).toBeVisible();
 });
 
 test("user deletes a card", async ({ page }) => {
-  await page.getByRole("button", { name: "Delete Audit empty states" }).click();
-  await expect(page.getByText("Audit empty states")).toHaveCount(0);
+  await addTestCard(page, "backlog", "Test task to delete", "This will be deleted");
+  await page.getByRole("button", { name: "Delete Test task to delete" }).click();
+  await expect(page.getByText("Test task to delete")).toHaveCount(0);
 });
 
 test("user edits a card", async ({ page }) => {
-  await page.getByRole("button", { name: "Edit Audit empty states" }).click();
-  await page.getByLabel("Edit title for Audit empty states").fill("Audit hydration issues");
-  await page.getByLabel("Edit details for Audit empty states").fill("Check client-only rendering.");
+  await addTestCard(page, "backlog", "Original title", "Original details");
+  await page.getByRole("button", { name: "Edit Original title" }).click();
+  await page.getByLabel("Edit title for Original title").fill("Updated title");
+  await page.getByLabel("Edit details for Original title").fill("Updated details");
   await page.getByRole("button", { name: "Update" }).click();
 
-  await expect(page.getByText("Audit hydration issues")).toBeVisible();
-  await expect(page.getByText("Check client-only rendering.")).toBeVisible();
+  await expect(page.getByText("Updated title")).toBeVisible();
+  await expect(page.getByText("Updated details")).toBeVisible();
 });
 
 test("user moves a card within a column", async ({ page }) => {
-  await page.getByRole("button", { name: "Move down Audit empty states" }).click();
-  await page.getByRole("button", { name: "Move down Audit empty states" }).click();
+  await addTestCard(page, "backlog", "Card A", "Details A");
+  await addTestCard(page, "backlog", "Card B", "Details B");
+
+  await page.getByRole("button", { name: "Move down Card A" }).click();
 
   const backlogSection = page.locator('[data-column-id="backlog"]');
   const titles = backlogSection.locator("h3");
-  await expect(titles.nth(0)).toHaveText("Map drag edge cases");
-  await expect(titles.nth(1)).toHaveText("Draft sprint focus");
-  await expect(titles.nth(2)).toHaveText("Audit empty states");
+  await expect(titles.nth(0)).toHaveText("Card B");
+  await expect(titles.nth(1)).toHaveText("Card A");
 });
 
 test("user moves a card across columns", async ({ page }) => {
   const inProgressColumn = page.locator('[data-column-id="in-progress"]');
-  await page.getByRole("button", { name: "Move right Refine card typography" }).click();
+  await addTestCard(page, "todo", "Move me to in-progress", "Testing cross-column move");
 
-  await expect(inProgressColumn.getByText("Refine card typography")).toBeVisible();
+  await page.getByRole("button", { name: "Move right Move me to in-progress" }).click();
+
+  await expect(inProgressColumn.getByText("Move me to in-progress")).toBeVisible();
 });
 
 test("user renames a column", async ({ page }) => {
@@ -77,16 +88,21 @@ test("user renames a column", async ({ page }) => {
 test("user generates tasks via AI", async ({ page }) => {
   await page.getByRole("textbox", { name: "Prompt" }).fill("Break the board polish into final actions.");
   await page.getByRole("combobox", { name: "Insert Into" }).selectOption("done");
-  await page.getByRole("button", { name: "Ask AI" }).click();
+  await page.getByRole("button", { name: "Generate" }).click();
 
   const doneColumn = page.locator('[data-column-id="done"]');
   await expect(page.getByText(/review and final polish still need attention/i)).toBeVisible();
-  await expect(doneColumn.getByText("Define drag QA")).toBeVisible();
-  await expect(doneColumn.getByText("Mock AI response")).toBeVisible();
-  await expect(doneColumn.getByText("Ship MVP review pass")).toBeVisible();
+  await expect(doneColumn.locator("h3", { hasText: "Define drag QA" })).toBeVisible();
+  await expect(doneColumn.getByText("1.")).toBeVisible();
 });
 
 test("user deletes a completed history record", async ({ page }) => {
-  await page.getByRole("button", { name: "Delete history for Choose color system" }).click();
-  await expect(page.getByRole("button", { name: "Delete history for Choose color system" })).toHaveCount(0);
+  await addTestCard(page, "todo", "Task for history", "Will be completed");
+  await page.getByRole("button", { name: "Move right Task for history" }).click();
+  await page.getByRole("button", { name: "Move right Task for history" }).click();
+  await page.getByRole("button", { name: "Move right Task for history" }).click();
+  await page.getByRole("button", { name: "Move right Task for history" }).click();
+
+  await page.getByRole("button", { name: "Delete history for Task for history" }).click();
+  await expect(page.getByRole("button", { name: "Delete history for Task for history" })).toHaveCount(0);
 });

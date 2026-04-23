@@ -1,13 +1,11 @@
-import type { AiTaskResponse, Column } from "@/types/board";
+import type { AiTask, AiTaskResponse, Column } from "@/types/board";
 
-export function parseTaskTitles(content: string): string[] {
-  return content
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => line.replace(/^[-*\d.)\s]+/, "").trim())
-    .filter(Boolean)
-    .slice(0, 5);
+export function parseTaskTitles(content: string): AiTask[] {
+  const lines = content.split("\n").map((line) => line.trim()).filter(Boolean);
+  return lines.map((line) => ({
+    title: line.replace(/^[-*\d.)\s]+/, "").trim(),
+    details: "",
+  })).slice(0, 5);
 }
 
 export function createBoardSnapshot(columns: Column[]): string {
@@ -28,10 +26,15 @@ export function parseAiResponse(content: string): AiTaskResponse | null {
   try {
     const parsed = JSON.parse(content) as Partial<AiTaskResponse>;
     const summary = parsed.summary?.trim();
-    const tasks = Array.isArray(parsed.tasks)
+    const tasks: AiTask[] = Array.isArray(parsed.tasks)
       ? parsed.tasks
-          .map((task) => String(task).trim())
-          .filter(Boolean)
+          .filter((task): task is { title: string; details: string } => 
+            typeof task === "object" && task !== null && typeof task.title === "string"
+          )
+          .map((task) => ({
+            title: task.title.trim(),
+            details: task.details?.trim() || "",
+          }))
           .slice(0, 5)
       : [];
 
