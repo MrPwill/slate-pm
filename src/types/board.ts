@@ -16,6 +16,19 @@ export type CardLocation = {
   index: number;
 };
 
+export type AiActionType = "create" | "move" | "update";
+
+export type AiAction = {
+  action: AiActionType;
+  title?: string;
+  details?: string;
+  cardId?: string;
+  sourceColumnId?: string;
+  sourceIndex?: number;
+  targetColumnId?: string;
+  targetIndex?: number;
+};
+
 export type AiTask = {
   title: string;
   details: string;
@@ -24,6 +37,7 @@ export type AiTask = {
 export type AiTaskResponse = {
   summary: string;
   tasks: AiTask[];
+  actions?: AiAction[];
 };
 
 export type CompletedRecord = {

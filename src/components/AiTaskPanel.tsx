@@ -8,6 +8,7 @@ import type { AiTaskResponse } from "@/types/board";
 export function AiTaskPanel() {
   const columns = useBoardStore((state) => state.columns);
   const addGeneratedCards = useBoardStore((state) => state.addGeneratedCards);
+  const executeAiActions = useBoardStore((state) => state.executeAiActions);
   const [prompt, setPrompt] = useState("");
   const [targetColumnId, setTargetColumnId] = useState(columns[0]?.id ?? "");
   const [summary, setSummary] = useState("");
@@ -54,6 +55,9 @@ export function AiTaskPanel() {
           .map((task, index) => `${index + 1}. ${task.title}\n${task.details}`)
           .join("\n\n");
         addGeneratedCards(targetColumnId, [{ title: combinedTitle, details: combinedDetails }]);
+      }
+      if (data.actions?.length) {
+        executeAiActions(data.actions);
       }
       setPrompt("");
     });

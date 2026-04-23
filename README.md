@@ -19,6 +19,7 @@ Each column shows a brief description to help users understand its purpose.
 - **Add/Edit/Delete Cards** - Full CRUD operations on tasks
 - **Column Renaming** - Customize column titles
 - **AI Task Generation** - Ask AI to generate task ideas for any project
+- **AI Card Actions** - AI can also move and update existing cards based on your requests
 - **Split AI Cards** - Split AI-generated cards into individual task cards
 - **Completed History** - Keep a record of completed tasks
 - **User Accounts** - Create an account to save your board locally
@@ -76,6 +77,15 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 The AI generates one card with all tasks. Click **Split** to break it into individual task cards.
 
+#### AI Card Actions
+
+In addition to creating tasks, you can ask AI to move and update existing cards. The AI reads your board state and can:
+
+- **Move cards** - "Move the design task to Review" or "Move API task to done"
+- **Update cards** - "Rename login task to User authentication" or "Add more details to the testing task"
+
+The AI automatically applies these changes when it understands your intent from the board context.
+
 #### Example
 
 If you ask AI "How to make a cake?", it generates a card with title "Making a Cake" and details containing numbered steps with sub-tasks:
@@ -127,3 +137,16 @@ Move a card to the "Done" column. It appears in your completed history where you
 ## Data Storage
 
 All data is stored in your browser's localStorage. No database required. Your tasks persist across sessions on the same device.
+
+## Future Updates
+
+- **AI Column Management** - AI can rename columns or suggest column structure changes
+- **AI Task Analysis** - AI analyzes board progress and provides insights on bottlenecks
+- **AI Persistent Memory** - AI remembers user preferences and project context across sessions for personalized assistance
+- **User Database** - Cloud-based user accounts with persistent storage across devices
+- **Keyboard Shortcuts** - Quick actions via keyboard for power users
+- **Card Labels/Tags** - Color-coded labels for categorizing tasks
+- **Task Dependencies** - Mark tasks that depend on other tasks
+- **Search & Filter** - Find cards quickly across all columns
+- **Dark Mode** - Toggle between light and dark themes
+- **Export Board** - Export tasks as JSON or markdown

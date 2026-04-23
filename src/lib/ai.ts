@@ -1,4 +1,4 @@
-import type { AiTask, AiTaskResponse, Column } from "@/types/board";
+import type { AiTask, AiTaskResponse, AiAction, Column } from "@/types/board";
 
 export function parseTaskTitles(content: string): AiTask[] {
   const lines = content.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -38,6 +38,26 @@ export function parseAiResponse(content: string): AiTaskResponse | null {
           .slice(0, 5)
       : [];
 
+    const actions: AiAction[] = Array.isArray(parsed.actions)
+      ? parsed.actions
+          .filter((action): action is AiAction =>
+            typeof action === "object" &&
+            action !== null &&
+            ["create", "move", "update"].includes(action.action)
+          )
+          .map((action) => ({
+            action: action.action,
+            title: action.title?.trim(),
+            details: action.details?.trim(),
+            cardId: action.cardId?.trim(),
+            sourceColumnId: action.sourceColumnId?.trim(),
+            sourceIndex: typeof action.sourceIndex === "number" ? action.sourceIndex : undefined,
+            targetColumnId: action.targetColumnId?.trim(),
+            targetIndex: typeof action.targetIndex === "number" ? action.targetIndex : undefined,
+          }))
+          .slice(0, 3)
+      : [];
+
     if (!summary) {
       return null;
     }
@@ -45,6 +65,7 @@ export function parseAiResponse(content: string): AiTaskResponse | null {
     return {
       summary,
       tasks,
+      actions,
     };
   } catch {
     return null;

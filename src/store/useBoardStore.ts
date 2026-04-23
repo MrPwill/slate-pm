@@ -4,6 +4,7 @@ import { create, type StateCreator } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createInitialColumns } from "@/lib/seed";
 import type {
+  AiAction,
   AiTask,
   AuthResult,
   Card,
@@ -29,6 +30,7 @@ export type BoardState = {
   moveCard: (source: CardLocation, destination: CardLocation) => void;
   renameColumn: (columnId: string, title: string) => void;
   addGeneratedCards: (columnId: string, tasks: AiTask[]) => void;
+  executeAiActions: (actions: AiAction[]) => void;
   deleteCompletedRecord: (recordId: string) => void;
   resetBoard: () => void;
   resetApp: () => void;
@@ -331,6 +333,57 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
               }
             : column,
         );
+        const nextCompletedRecords = syncCompletedRecords(
+          state.columns,
+          nextColumns,
+          state.completedRecords,
+        );
+
+        return syncUserBoard(state, nextColumns, nextCompletedRecords);
+      }),
+    executeAiActions: (actions: AiAction[]) =>
+      set((state) => {
+        let nextColumns = cloneColumns(state.columns);
+
+        for (const action of actions) {
+          if (action.action === "create" && action.title) {
+            const targetCol = nextColumns.find((c) => c.id === action.targetColumnId);
+            if (targetCol) {
+              targetCol.cards.push({
+                id: crypto.randomUUID(),
+                title: action.title,
+                details: action.details || "",
+              });
+            }
+          } else if (action.action === "move" && action.cardId && action.targetColumnId) {
+            const sourceCol = nextColumns.find((c) =>
+              c.cards.some((card) => card.id === action.cardId)
+            );
+            const targetCol = nextColumns.find((c) => c.id === action.targetColumnId);
+            const cardIndex = sourceCol?.cards.findIndex((c) => c.id === action.cardId);
+
+            if (sourceCol && targetCol && cardIndex !== undefined && cardIndex >= 0) {
+              const [card] = sourceCol.cards.splice(cardIndex, 1);
+              const targetIndex = Math.max(
+                0,
+                Math.min(action.targetIndex ?? targetCol.cards.length, targetCol.cards.length)
+              );
+              targetCol.cards.splice(targetIndex, 0, card);
+            }
+          } else if (action.action === "update" && action.cardId) {
+            const col = nextColumns.find((c) =>
+              c.cards.some((card) => card.id === action.cardId)
+            );
+            if (col) {
+              const card = col.cards.find((c) => c.id === action.cardId);
+              if (card) {
+                if (action.title) card.title = action.title;
+                if (action.details !== undefined) card.details = action.details;
+              }
+            }
+          }
+        }
+
         const nextCompletedRecords = syncCompletedRecords(
           state.columns,
           nextColumns,
