@@ -20,6 +20,8 @@ import type {
   UserAccount,
   UserBoardData,
 } from "@/types/board";
+import { signUpWithEmail, signInWithEmail, signOut as supabaseSignOut, onAuthStateChange } from "@/lib/supabase/auth";
+import { supabase } from "@/lib/supabase";
 
 export type BoardState = {
   users: UserAccount[];
@@ -193,7 +195,7 @@ function createInitialState(): Pick<
 
 const createStoreState: StateCreator<BoardState> = (set, get) => ({
   ...createInitialState(),
-  registerUser: ({ name, email, password }) => {
+  registerUser: async ({ name, email, password }): Promise<AuthResult> => {
     const nextName = name.trim();
     const nextEmail = email.trim().toLowerCase();
     const nextPassword = password.trim();
@@ -202,65 +204,76 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
       return { ok: false, error: "Name, email, and password are required." };
     }
 
-    if (get().users.some((user) => user.email.toLowerCase() === nextEmail)) {
-      return { ok: false, error: "An account with that email already exists." };
+    const result = await signUpWithEmail(nextEmail, nextPassword, nextName);
+
+    if (!result.success && !result.ok) {
+      return result;
     }
 
-    const user: UserAccount = {
-      id: crypto.randomUUID(),
-      name: nextName,
-      email: nextEmail,
-      password: nextPassword,
-    };
+    const userId = result.userId!;
     const board = createUserBoardData();
 
     set((state) => ({
-      users: [...state.users, user],
-      currentUserId: user.id,
+      users: [...state.users, { id: userId, name: nextName, email: nextEmail, password: "" }],
+      currentUserId: userId,
       columns: cloneColumns(board.columns),
       completedRecords: cloneCompletedRecords(board.completedRecords),
       boardsByUserId: {
         ...state.boardsByUserId,
-        [user.id]: board,
+        [userId]: board,
       },
     }));
 
-    return { ok: true };
+    return { ok: true, userId, email: nextEmail };
   },
-  loginUser: ({ email, password }) => {
+  loginUser: async ({ email, password }): Promise<AuthResult> => {
     const nextEmail = email.trim().toLowerCase();
-    const user = get().users.find(
-      (entry) => entry.email.toLowerCase() === nextEmail && entry.password === password,
-    );
 
-    if (!user) {
-      return { ok: false, error: "Invalid email or password." };
+    const result = await signInWithEmail(nextEmail, password);
+
+    if (!result.success && !result.ok) {
+      return result;
     }
 
-    const board = get().boardsByUserId[user.id] ?? createUserBoardData();
+    const userId = result.userId!;
+    const board = get().boardsByUserId[userId] ?? createUserBoardData();
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, name")
+      .eq("id", userId)
+      .single();
 
     set((state) => ({
-      currentUserId: user.id,
+      currentUserId: userId,
       columns: cloneColumns(board.columns),
       completedRecords: cloneCompletedRecords(board.completedRecords),
       boardsByUserId: {
         ...state.boardsByUserId,
-        [user.id]: {
+        [userId]: {
           columns: cloneColumns(board.columns),
           completedRecords: cloneCompletedRecords(board.completedRecords),
         },
       },
+      users: profile
+        ? [
+            ...state.users.filter((u) => u.id !== userId),
+            { id: userId, name: profile.name, email: nextEmail, password: "" },
+          ]
+        : state.users,
     }));
 
-    return { ok: true };
+    return { ok: true, userId, email: nextEmail };
   },
-  logoutUser: () =>
+  logoutUser: () => {
+    supabaseSignOut();
     set((state) => ({
       currentUserId: null,
       columns: createInitialColumns(),
       completedRecords: [],
       boardsByUserId: { ...state.boardsByUserId },
-    })),
+    }));
+  },
     addCard: (columnId, card) =>
       set((state) => ({
         ...syncUserBoard(
@@ -645,6 +658,37 @@ export const useBoardStore = create<BoardState>()(
         state.columns = cloneColumns(board.columns);
         state.completedRecords = cloneCompletedRecords(board.completedRecords);
       }
+
+      supabase.auth.getSession().then(({ data }) => {
+        if (!data.session) {
+          state.currentUserId = null;
+          state.columns = createInitialColumns();
+          state.completedRecords = [];
+          return;
+        }
+
+        supabase
+          .from("profiles")
+.select("id, name")
+          .eq("id", data.session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            if (!state.currentUserId) return;
+            if (profile) {
+              const existing = state.users.find((u) => u.id === profile.id);
+              if (existing) {
+                existing.name = profile.name;
+              } else {
+                state.users.push({
+                  id: profile.id,
+                  name: profile.name,
+                  email: data.session.user.email || "",
+                  password: "",
+                });
+              }
+            }
+          });
+      });
     },
   }),
 );

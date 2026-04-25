@@ -13,16 +13,20 @@ export function AuthPanel() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
+    setError("");
 
-    const result =
-      mode === "register"
-        ? registerUser({ name, email, password })
-        : loginUser({ email, password });
+    const result = mode === "register"
+      ? await registerUser({ name, email, password })
+      : await loginUser({ email, password });
 
-    if (!result.ok) {
+    setLoading(false);
+
+    if (!result.ok && !result.success) {
       setError(result.error ?? "Something went wrong.");
       return;
     }
@@ -104,6 +108,7 @@ export function AuthPanel() {
                   className="w-full rounded-2xl border border-white/12 bg-white/8 px-4 py-3 text-sm text-white outline-none transition focus:border-[var(--slate-blue)]"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                  required
                 />
               </label>
             ) : null}
@@ -118,6 +123,7 @@ export function AuthPanel() {
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
+                required
               />
             </label>
 
@@ -131,14 +137,24 @@ export function AuthPanel() {
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
+                required
+                minLength={6}
               />
             </label>
 
             <button
               type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--slate-blue)] px-5 text-sm font-semibold text-[var(--slate-navy)] transition hover:scale-[1.01] hover:bg-[var(--slate-blue-soft)]"
+              disabled={loading}
+              className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[var(--slate-blue)] px-5 text-sm font-semibold text-[var(--slate-navy)] transition hover:scale-[1.01] hover:bg-[var(--slate-blue-soft)] disabled:opacity-50"
             >
-              {mode === "register" ? "Create Account" : "Log In"}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--slate-navy)]" />
+                  {mode === "register" ? "Creating account..." : "Signing in..."}
+                </span>
+              ) : (
+                mode === "register" ? "Create Account" : "Log In"
+              )}
             </button>
 
             {error ? <p className="text-sm text-[#ffe08a]">{error}</p> : null}
@@ -148,4 +164,3 @@ export function AuthPanel() {
     </main>
   );
 }
-
