@@ -19,7 +19,11 @@ import { AuthPanel } from "@/components/AuthPanel";
 import { BoardCard } from "@/components/BoardCard";
 import { BoardColumn } from "@/components/BoardColumn";
 import { CompletedHistoryPanel } from "@/components/CompletedHistoryPanel";
+import { Sidebar } from "@/components/Sidebar";
+import { BoardSettingsPanel } from "@/components/BoardSettingsPanel";
+import { EnhancedAiPanel } from "@/components/ai/EnhancedAiPanel";
 import { useBoardStore } from "@/store/useBoardStore";
+import { useBoards } from "@/hooks/useBoards";
 import type { Card, Column } from "@/types/board";
 
 type CardLookup = {
@@ -52,7 +56,11 @@ export function BoardApp() {
   const columns = useBoardStore((state) => state.columns);
   const moveCard = useBoardStore((state) => state.moveCard);
   const logoutUser = useBoardStore((state) => state.logoutUser);
+  const allBoards = useBoardStore((state) => state.allBoards);
+  const currentBoardId = useBoardStore((state) => state.currentBoardId);
+  const { setCurrentBoard, loadBoardFromDb } = useBoardStore();
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [settingsPanelBoardId, setSettingsPanelBoardId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -170,79 +178,122 @@ export function BoardApp() {
     );
   };
 
+  const handleBoardChange = (boardId: string | null) => {
+    setCurrentBoard(boardId);
+    if (boardId) {
+      loadBoardFromDb(boardId);
+    } else {
+      logoutUser();
+    }
+  };
+
+  const currentBoard = allBoards.find((b) => b.id === currentBoardId) || null;
+
   return (
-    <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-10">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1600px] flex-col gap-6">
-        <section className="relative overflow-hidden rounded-[2rem] border border-[rgba(8,17,79,0.08)] bg-[rgba(255,255,255,0.42)] p-5 shadow-[var(--slate-shadow)] backdrop-blur-xl sm:p-8">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.35),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(236,173,10,0.16),transparent_24%)]" />
-          <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--slate-navy)]/70">
-                    Slate
-                  </p>
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--slate-navy)]">
-                      {currentUser?.name}
+    <div className="flex min-h-screen overflow-x-hidden">
+      <Sidebar onBoardSettings={(boardId) => setSettingsPanelBoardId(boardId)} />
+
+      <main className="flex-1 min-h-screen px-4 py-6 sm:px-6 lg:px-10 w-full max-w-full overflow-x-hidden">
+        <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-full flex-col gap-6">
+          <section className="relative overflow-hidden rounded-[2rem] border border-[rgba(8,17,79,0.08)] bg-[rgba(255,255,255,0.42)] p-5 shadow-[var(--slate-shadow)] backdrop-blur-xl sm:p-8">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.35),transparent_26%),radial-gradient(circle_at_bottom_right,rgba(236,173,10,0.16),transparent_24%)]" />
+            <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+              <div className="space-y-4 min-w-0">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--slate-navy)]/70">
+                      Slate
                     </p>
-                    <p className="text-sm text-[var(--slate-navy)]/62">{currentUser?.email}</p>
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--slate-navy)]">
+                        {currentUser?.name}
+                      </p>
+                      <p className="text-sm text-[var(--slate-navy)]/62">{currentUser?.email}</p>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    className="rounded-full border border-[rgba(8,17,79,0.12)] bg-white/60 px-4 py-2 text-sm font-semibold text-[var(--slate-navy)] transition hover:bg-white"
+                    onClick={() => logoutUser()}
+                  >
+                    Log Out
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="rounded-full border border-[rgba(8,17,79,0.12)] bg-white/60 px-4 py-2 text-sm font-semibold text-[var(--slate-navy)] transition hover:bg-white"
-                  onClick={() => logoutUser()}
-                >
-                  Log Out
-                </button>
+                {currentBoard && (
+                  <div className="space-y-1">
+                    <h1 className="text-3xl sm:text-4xl font-semibold tracking-[-0.04em] text-[var(--slate-navy)]">
+                      {currentBoard.title}
+                    </h1>
+                    {currentBoard.description && (
+                      <p className="max-w-2xl text-sm leading-7 text-[var(--slate-navy)]/70 sm:text-base">
+                        {currentBoard.description}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {!currentBoard && (
+                  <div className="space-y-3">
+                    <h1 className="text-4xl font-semibold tracking-[-0.04em] text-[var(--slate-navy)]">
+                      A focused workspace with history for every user.
+                    </h1>
+                    <p className="max-w-2xl text-sm leading-7 text-[var(--slate-navy)]/70 sm:text-base">
+                      Create tasks, move them fast, keep your completed work on record, and return to your board any time on this device.
+                    </p>
+                  </div>
+                )}
               </div>
-              <div className="max-w-3xl space-y-3">
-                <h1 className="text-4xl font-semibold tracking-[-0.04em] text-[var(--slate-navy)] sm:text-5xl">
-                  A focused workspace with history for every user.
-                </h1>
-                <p className="max-w-2xl text-sm leading-7 text-[var(--slate-navy)]/70 sm:text-base">
-                  Create tasks, move them fast, keep your completed work on record, and return to your board any time on this device.
-                </p>
+              <div className="space-y-4">
+                <CompletedHistoryPanel />
               </div>
             </div>
-            <div className="space-y-4">
-              <CompletedHistoryPanel />
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full">
-          <AiTaskPanel />
-        </section>
-
-        <DndContext
-          collisionDetection={closestCorners}
-          sensors={sensors}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-        >
-          <section className="flex min-h-[420px] gap-4 overflow-x-auto pb-4">
-            {columns.map((column) => (
-              <SortableContext
-                key={column.id}
-                items={column.cards.map((card) => card.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <BoardColumn column={column} />
-              </SortableContext>
-            ))}
           </section>
-          <DragOverlay>
-            {activeCard ? (
-              <div className="rotate-[0.35deg] scale-[1.03]">
-                <BoardCard card={activeCard} columnId="" isOverlay />
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-      </div>
-    </main>
+
+           <section className="w-full max-w-full overflow-x-hidden">
+             <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
+               <div className="lg:col-span-1 min-w-0">
+                 <EnhancedAiPanel />
+               </div>
+               <div className="lg:col-span-2 min-w-0">
+                 <AiTaskPanel />
+               </div>
+             </div>
+           </section>
+
+          <DndContext
+            collisionDetection={closestCorners}
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            <section className="flex flex-wrap min-h-[420px] gap-6 pb-4 w-full">
+              {columns.map((column) => (
+                <SortableContext
+                  key={column.id}
+                  items={column.cards.map((card) => card.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <BoardColumn column={column} />
+                </SortableContext>
+              ))}
+            </section>
+            <DragOverlay>
+              {activeCard ? (
+                <div className="rotate-[0.35deg] scale-[1.03]">
+                  <BoardCard card={activeCard} columnId="" isOverlay />
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      </main>
+
+      {settingsPanelBoardId && (
+        <BoardSettingsPanel
+          boardId={settingsPanelBoardId}
+          onClose={() => setSettingsPanelBoardId(null)}
+        />
+      )}
+    </div>
   );
 }

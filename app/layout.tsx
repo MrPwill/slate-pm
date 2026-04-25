@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${dmSans.variable} bg-[var(--slate-ink)] text-slate-50 antialiased`}>
+    <html lang="en" className="overflow-x-hidden">
+      <body className={`${dmSans.variable} bg-[var(--slate-ink)] text-slate-50 antialiased overflow-x-hidden`}>
         {children}
       </body>
     </html>

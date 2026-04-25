@@ -2,15 +2,21 @@
 
 import { create, type StateCreator } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { createInitialColumns } from "@/lib/seed";
+import { createInitialBoardData, createInitialColumns, createInitialCompletedRecords } from "@/lib/seed";
 import type {
   AiAction,
   AiTask,
   AuthResult,
+  Board,
+  BoardMember,
   Card,
   CardLocation,
   Column,
   CompletedRecord,
+  DbCard,
+  DbColumn,
+  DbComment,
+  DbCompletedRecord,
   UserAccount,
   UserBoardData,
 } from "@/types/board";
@@ -21,6 +27,13 @@ export type BoardState = {
   boardsByUserId: Record<string, UserBoardData>;
   columns: Column[];
   completedRecords: CompletedRecord[];
+  currentBoardId: string | null;
+  allBoards: Board[];
+  boardMembers: BoardMember[];
+  allColumns: DbColumn[];
+  allCards: DbCard[];
+  allComments: DbComment[];
+  allCompletedRecords: DbCompletedRecord[];
   registerUser: (input: { name: string; email: string; password: string }) => AuthResult;
   loginUser: (input: { email: string; password: string }) => AuthResult;
   logoutUser: () => void;
@@ -34,6 +47,28 @@ export type BoardState = {
   deleteCompletedRecord: (recordId: string) => void;
   resetBoard: () => void;
   resetApp: () => void;
+  setCurrentBoard: (boardId: string | null) => void;
+  setAllBoards: (boards: Board[]) => void;
+  setBoardMembers: (members: BoardMember[]) => void;
+  setAllColumns: (columns: DbColumn[]) => void;
+  setAllCards: (cards: DbCard[]) => void;
+  setAllComments: (comments: DbComment[]) => void;
+  setAllCompletedRecords: (records: DbCompletedRecord[]) => void;
+  addBoard: (board: Board) => void;
+  updateBoardInStore: (board: Board) => void;
+  deleteBoardFromStore: (boardId: string) => void;
+  addMember: (member: BoardMember) => void;
+  removeMember: (boardId: string, userId: string) => void;
+  addColumnToBoard: (column: DbColumn) => void;
+  updateColumnInBoard: (column: DbColumn) => void;
+  deleteColumnFromBoard: (columnId: string) => void;
+  addCardToBoard: (card: DbCard) => void;
+  updateCardInBoard: (card: DbCard) => void;
+  moveCardInBoard: (cardId: string, fromColumnId: string, toColumnId: string, toIndex: number) => void;
+  deleteCardFromBoard: (cardId: string) => void;
+  addComment: (comment: DbComment) => void;
+  addCompletedRecord: (record: DbCompletedRecord) => void;
+  loadBoardFromDb: (boardId: string) => void;
 };
 
 const cloneColumns = (columns: Column[]) =>
@@ -48,7 +83,7 @@ const cloneCompletedRecords = (records: CompletedRecord[]) =>
 const getDoneCards = (columns: Column[]) =>
   columns.find((column) => column.id === "done")?.cards ?? [];
 
-function createInitialCompletedRecords(columns: Column[]): CompletedRecord[] {
+function createCompletedRecordsFromDoneCards(columns: Column[]): CompletedRecord[] {
   return getDoneCards(columns).map((card) => ({
     id: crypto.randomUUID(),
     cardId: card.id,
@@ -62,7 +97,7 @@ function createUserBoardData(): UserBoardData {
   const columns = createInitialColumns();
   return {
     columns,
-    completedRecords: createInitialCompletedRecords(columns),
+    completedRecords: createCompletedRecordsFromDoneCards(columns),
   };
 }
 
@@ -126,15 +161,33 @@ function syncUserBoard(
 
 function createInitialState(): Pick<
   BoardState,
-  "users" | "currentUserId" | "boardsByUserId" | "columns" | "completedRecords"
+  | "users"
+  | "currentUserId"
+  | "boardsByUserId"
+  | "columns"
+  | "completedRecords"
+  | "currentBoardId"
+  | "allBoards"
+  | "boardMembers"
+  | "allColumns"
+  | "allCards"
+  | "allComments"
+  | "allCompletedRecords"
 > {
-  const board = createUserBoardData();
+  const board = createInitialBoardData();
   return {
     users: [],
     currentUserId: null,
     boardsByUserId: {},
     columns: board.columns,
     completedRecords: board.completedRecords,
+    currentBoardId: null,
+    allBoards: [],
+    boardMembers: [],
+    allColumns: [],
+    allCards: [],
+    allComments: [],
+    allCompletedRecords: [],
   };
 }
 
@@ -405,6 +458,161 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
     set((state) => syncUserBoard(state, board.columns, board.completedRecords));
   },
   resetApp: () => set(createInitialState()),
+  setCurrentBoard: (boardId) =>
+    set((state) => ({
+      ...state,
+      currentBoardId: boardId,
+    })),
+  setAllBoards: (boards) =>
+    set((state) => ({
+      ...state,
+      allBoards: boards,
+    })),
+  setBoardMembers: (members) =>
+    set((state) => ({
+      ...state,
+      boardMembers: members,
+    })),
+  setAllColumns: (columns) =>
+    set((state) => ({
+      ...state,
+      allColumns: columns,
+    })),
+  setAllCards: (cards) =>
+    set((state) => ({
+      ...state,
+      allCards: cards,
+    })),
+  setAllComments: (comments) =>
+    set((state) => ({
+      ...state,
+      allComments: comments,
+    })),
+  setAllCompletedRecords: (records) =>
+    set((state) => ({
+      ...state,
+      allCompletedRecords: records,
+    })),
+  addBoard: (board) =>
+    set((state) => ({
+      ...state,
+      allBoards: [...state.allBoards, board],
+    })),
+  updateBoardInStore: (board) =>
+    set((state) => ({
+      ...state,
+      allBoards: state.allBoards.map((b) => (b.id === board.id ? board : b)),
+    })),
+  deleteBoardFromStore: (boardId) =>
+    set((state) => ({
+      ...state,
+      allBoards: state.allBoards.filter((b) => b.id !== boardId),
+      boardMembers: state.boardMembers.filter((m) => m.board_id !== boardId),
+    })),
+  addMember: (member) =>
+    set((state) => ({
+      ...state,
+      boardMembers: [...state.boardMembers, member],
+    })),
+  removeMember: (boardId, userId) =>
+    set((state) => ({
+      ...state,
+      boardMembers: state.boardMembers.filter(
+        (m) => !(m.board_id === boardId && m.user_id === userId),
+      ),
+    })),
+  addColumnToBoard: (column) =>
+    set((state) => ({
+      ...state,
+      allColumns: [...state.allColumns, column],
+    })),
+  updateColumnInBoard: (column) =>
+    set((state) => ({
+      ...state,
+      allColumns: state.allColumns.map((c) => (c.id === column.id ? column : c)),
+    })),
+  deleteColumnFromBoard: (columnId) =>
+    set((state) => ({
+      ...state,
+      allColumns: state.allColumns.filter((c) => c.id !== columnId),
+      allCards: state.allCards.filter((c) => c.column_id !== columnId),
+    })),
+  addCardToBoard: (card) =>
+    set((state) => ({
+      ...state,
+      allCards: [...state.allCards, card],
+    })),
+  updateCardInBoard: (card: DbCard) =>
+    set((state) => ({
+      ...state,
+      allCards: state.allCards.map((c) => (c.id === card.id ? card : c)),
+    })),
+  moveCardInBoard: (cardId: string, fromColumnId: string, toColumnId: string, toIndex: number) =>
+    set((state) => {
+      const cards = [...state.allCards];
+      const cardIndex = cards.findIndex((c) => c.id === cardId);
+      if (cardIndex === -1) return state;
+
+      const [card] = cards.splice(cardIndex, 1);
+      card.column_id = toColumnId;
+
+      const toColumnCards = cards.filter((c) => c.column_id === toColumnId);
+      toColumnCards.splice(toIndex, 0, card);
+
+      return {
+        ...state,
+        allCards: cards,
+      };
+    }),
+  deleteCardFromBoard: (cardId: string) =>
+    set((state) => ({
+      ...state,
+      allCards: state.allCards.filter((c) => c.id !== cardId),
+    })),
+  addComment: (comment: DbComment) =>
+    set((state) => ({
+      ...state,
+      allComments: [...state.allComments, comment],
+    })),
+  addCompletedRecord: (record: DbCompletedRecord) =>
+    set((state) => ({
+      ...state,
+      allCompletedRecords: [...state.allCompletedRecords, record],
+    })),
+  loadBoardFromDb: (boardId: string) => {
+    set((state) => {
+      const board = state.allBoards.find((b) => b.id === boardId);
+      if (!board) return {} as Partial<BoardState>;
+      const boardMembers = state.boardMembers.filter((m) => m.board_id === boardId);
+      const boardColumns = state.allColumns
+        .filter((c) => c.board_id === boardId)
+        .sort((a, b) => a.order_index - b.order_index);
+      const boardCardIds = boardColumns.map((c) => c.id);
+      const boardCards = state.allCards
+        .filter((c) => boardCardIds.includes(c.column_id))
+        .sort((a, b) => a.order_index - b.order_index);
+      const columns: Column[] = boardColumns.map((col) => ({
+        id: col.id,
+        title: col.title,
+        description: col.description || undefined,
+        cards: boardCards
+          .filter((card) => card.column_id === col.id)
+          .map((card) => ({
+            id: card.id,
+            title: card.title,
+            details: card.details || "",
+          })),
+      }));
+      const completedRecords = state.allCompletedRecords.filter((r) => r.board_id === boardId);
+      const newState = {
+        currentBoardId: boardId,
+        columns,
+        completedRecords,
+        boardMembers,
+      };
+      return newState as any;
+    }) as any;
+  },
 });
 
 export function createBoardState() {

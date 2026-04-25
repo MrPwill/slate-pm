@@ -64,3 +64,56 @@ export type AuthResult = {
   ok: boolean;
   error?: string;
 };
+
+// Supabase table types
+export interface Board {
+  id: string;
+  owner_id: string;
+  title: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BoardMember {
+  board_id: string;
+  user_id: string;
+  role: 'owner' | 'member';
+  created_at: string;
+}
+
+export interface DbColumn {
+  id: string;
+  board_id: string;
+  title: string;
+  description: string | null;
+  order_index: number;
+  created_at: string;
+}
+
+export interface DbCard {
+  id: string;
+  column_id: string;
+  title: string;
+  details: string | null;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DbComment {
+  id: string;
+  card_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface DbCompletedRecord {
+  id: string;
+  card_id: string;
+  board_id: string;
+  title: string;
+  details: string | null;
+  completed_at: string;
+}

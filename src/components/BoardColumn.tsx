@@ -22,7 +22,7 @@ export function BoardColumn({ column }: BoardColumnProps) {
     <section
       ref={setNodeRef}
       data-column-id={column.id}
-      className={`flex w-[320px] shrink-0 flex-col rounded-[1.75rem] border px-4 py-4 shadow-[0_18px_50px_rgba(5,20,71,0.12)] transition sm:w-[340px] ${
+      className={`flex flex-1 min-w-[280px] max-w-[400px] shrink-0 flex-col rounded-[1.75rem] border px-4 py-4 shadow-[0_18px_50px_rgba(5,20,71,0.12)] transition ${
         isOver
           ? "border-[var(--slate-blue)] bg-[rgba(8,17,79,0.9)]"
           : "border-[rgba(255,255,255,0.22)] bg-[linear-gradient(180deg,rgba(8,17,79,0.82),rgba(11,23,98,0.74))]"
