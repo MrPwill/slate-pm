@@ -89,8 +89,8 @@ export function AuthPanel() {
               </p>
               <p className="text-sm leading-6 text-white/70">
                 {mode === "register"
-                  ? "Accounts are stored locally in this browser for now."
-                  : "Use the email and password you created on this device."}
+                  ? "Create an account to save your boards and progress history."
+                  : "Sign in to access your boards and history."}
               </p>
             </div>
 
