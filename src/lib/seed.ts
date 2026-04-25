@@ -1,4 +1,4 @@
-import type { Card, Column, CompletedRecord } from "@/types/board";
+import type { Column, CompletedRecord } from "@/types/board";
 
 export function createInitialColumns(): Column[] {
   return [

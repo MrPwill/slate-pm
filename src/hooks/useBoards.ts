@@ -37,11 +37,11 @@ export function useBoards() {
 
       if (error) throw error
       // Remove the joined board_members from the result to match the Board type
-      const formattedData = (data as any[] || []).map(({ board_members, ...board }) => board)
+      const formattedData = (data as Record<string, unknown>[] || []).map(({ board_members: _board_members, ...board }) => board as unknown as Board)
       setBoards(formattedData)
       setAllBoards(formattedData)
-    } catch (error: any) {
-      console.error('Error fetching boards:', error?.message || error)
+    } catch (error: unknown) {
+      console.error('Error fetching boards:', error instanceof Error ? error.message : error)
     } finally {
       setLoading(false)
     }
@@ -72,8 +72,8 @@ export function useBoards() {
 
       setBoards((prev) => [data, ...prev])
       return data
-    } catch (error: any) {
-      console.error('Error creating board:', error?.message || error)
+    } catch (error: unknown) {
+      console.error('Error creating board:', error instanceof Error ? error.message : error)
       return null
     }
   }
@@ -90,8 +90,8 @@ export function useBoards() {
       if (error) throw error
       setBoards((prev) => prev.map((board) => (board.id === id ? data : board)))
       return data
-    } catch (error: any) {
-      console.error('Error updating board:', error?.message || error)
+    } catch (error: unknown) {
+      console.error('Error updating board:', error instanceof Error ? error.message : error)
       return null
     }
   }
@@ -101,8 +101,8 @@ export function useBoards() {
       const { error } = await supabase.from('boards').delete().eq('id', id)
       if (error) throw error
       setBoards((prev) => prev.filter((board) => board.id !== id))
-    } catch (error: any) {
-      console.error('Error deleting board:', error?.message || error)
+    } catch (error: unknown) {
+      console.error('Error deleting board:', error instanceof Error ? error.message : error)
     }
   }
 

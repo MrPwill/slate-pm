@@ -8,7 +8,7 @@ export function SummaryGenerator() {
   const { columns } = useBoardStore();
   const [summary, setSummary] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   // Flatten all comments from all cards
   const allComments = columns.flatMap(column =>

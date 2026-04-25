@@ -61,7 +61,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
     const columnIndex = columns.findIndex((col) => col.id === columnId);
     if (columnIndex < 0) return;
 
-    sections.forEach((section, idx) => {
+    sections.forEach((section, _idx) => {
       addCard(columnId, {
         id: crypto.randomUUID(),
         title: section.title,

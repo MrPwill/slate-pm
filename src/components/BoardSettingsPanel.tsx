@@ -61,7 +61,7 @@ export function BoardSettingsPanel({
   onClose,
 }: BoardSettingsPanelProps) {
   const [inviteEmail, setInviteEmail] = useState("");
-  const [isInviting, setIsInviting] = useState(false);
+  const [_isInviting, setIsInviting] = useState(false);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const { allBoards, boardMembers, removeMember } = useBoardStore();
   const supabase = useSupabase();
@@ -69,7 +69,7 @@ export function BoardSettingsPanel({
   const board = allBoards.find((b) => b.id === boardId);
   const members = boardMembers.filter((m) => m.board_id === boardId);
 
-  const handleInvite = async (e: React.FormEvent) => {
+  const _handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail.trim()) return;
 
@@ -87,7 +87,7 @@ export function BoardSettingsPanel({
         return;
       }
 
-      const { data, error } = await supabase
+      const { data: _data, error } = await supabase
         .from("board_members")
         .insert({
           board_id: boardId,
@@ -109,7 +109,7 @@ export function BoardSettingsPanel({
       alert(`Invited ${userData.name} as member`);
       setInviteEmail("");
       setIsInviteDialogOpen(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       alert("Failed to invite member");
       console.error(error);
     } finally {

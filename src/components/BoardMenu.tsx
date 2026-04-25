@@ -1,7 +1,6 @@
 "use client";
 
-import { Board } from "@/types/board";
-import { useState } from "react";
+import { type Board } from "@/types/board";
 
 function MoreVerticalIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -44,14 +43,14 @@ function Trash2Icon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 interface BoardMenuProps {
-  board: any;
+  board: Board;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: () => void;
 }
 
 export function BoardMenu({
-  board,
+  board: _board,
   isOpen,
   onOpenChange,
   onDelete,

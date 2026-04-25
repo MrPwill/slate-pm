@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(data || []);
   } catch (error) {
-    console.error("Error fetching boards:", error);
+    console.error("Error fetching boards:", error instanceof Error ? error.message : error);
     return NextResponse.json(
       { error: "Failed to fetch boards" },
       { status: 500 }

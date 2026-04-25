@@ -70,7 +70,10 @@ export type UserBoardData = {
 };
 
 export type AuthResult = {
-  ok: boolean;
+  ok?: boolean;
+  success?: boolean;
+  userId?: string;
+  email?: string;
   error?: string;
 };
 

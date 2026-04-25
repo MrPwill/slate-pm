@@ -1,7 +1,7 @@
 "use client";
 
 import { useBoardStore } from "@/store/useBoardStore";
-import { Button } from "@/components/common/Button";
+
 import { BoardSelector } from "@/components/boards/BoardSelector";
 import { LogOutIcon, UserIcon } from "lucide-react";
 

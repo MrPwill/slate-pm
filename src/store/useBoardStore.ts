@@ -2,7 +2,7 @@
 
 import { create, type StateCreator } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { createInitialBoardData, createInitialColumns, createInitialCompletedRecords } from "@/lib/seed";
+import { createInitialBoardData, createInitialColumns } from "@/lib/seed";
 import type {
   AiAction,
   AiTask,
@@ -582,7 +582,7 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
   loadBoardFromDb: (boardId: string) => {
     set((state) => {
       const board = state.allBoards.find((b) => b.id === boardId);
-      if (!board) return {} as Partial<BoardState>;
+      if (!board) return {} as unknown as Partial<BoardState>;
       const boardMembers = state.boardMembers.filter((m) => m.board_id === boardId);
       const boardColumns = state.allColumns
         .filter((c) => c.board_id === boardId)
@@ -610,8 +610,8 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
         completedRecords,
         boardMembers,
       };
-      return newState as any;
-    }) as any;
+      return newState as unknown as Partial<BoardState>;
+    }) as unknown;
   },
 });
 

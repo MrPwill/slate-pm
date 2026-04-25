@@ -5,7 +5,7 @@ import { useBoardStore } from '@/store/useBoardStore'
 import { supabase } from '@/lib/supabase'
 
 export function useBoardMembers(boardId: string) {
-  const [members, setMembers] = useState<any[]>([])
+  const [members, setMembers] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const currentUserId = useBoardStore((state) => state.currentUserId)
 
@@ -22,23 +22,15 @@ export function useBoardMembers(boardId: string) {
 
   async function fetchBoardMembers() {
     try {
-      const { data, error } = await supabase
+const { data, error } = await supabase
         .from('board_members')
-        .select(`
-          *
-          /*,
-          users (
-            id,
-            name,
-            email
-          )*/
-        `)
+        .select('*')
         .eq('board_id', boardId)
 
     if (error) throw error
     setMembers(data || [])
-    } catch (error: any) {
-      console.error('Error fetching board members:', error?.message || error)
+    } catch (error: unknown) {
+      console.error('Error fetching board members:', error instanceof Error ? error.message : error)
     } finally {
       setLoading(false)
     }

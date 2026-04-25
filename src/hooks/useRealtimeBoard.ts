@@ -9,17 +9,17 @@ export function useRealtimeBoard(boardId: string) {
   const updateColumn = useBoardStore((state) => state.updateColumnInBoard)
   const addCard = useBoardStore((state) => state.addCardToBoard)
   const updateCard = useBoardStore((state) => state.updateCardInBoard)
-  const moveCard = useBoardStore((state) => state.moveCardInBoard)
+  const _moveCard = useBoardStore((state) => state.moveCardInBoard)
   const addComment = useBoardStore((state) => state.addComment)
   const addCompletedRecord = useBoardStore((state) => state.addCompletedRecord)
 
   useEffect(() => {
     if (!boardId) return
 
-    let columnsChannel: any = null
-    let cardsChannel: any = null
-    let commentsChannel: any = null
-    let completedChannel: any = null
+    let columnsChannel: ReturnType<typeof supabase.channel> | null = null
+    let cardsChannel: ReturnType<typeof supabase.channel> | null = null
+    let commentsChannel: ReturnType<typeof supabase.channel> | null = null
+    let completedChannel: ReturnType<typeof supabase.channel> | null = null
 
     // Subscribe to columns changes
     columnsChannel = supabase

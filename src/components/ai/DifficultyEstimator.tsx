@@ -8,7 +8,7 @@ export function DifficultyEstimator() {
   const { columns } = useBoardStore();
   const [difficulty, setDifficulty] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   // Extract all card titles and details for analysis
   const cardTexts = columns.flatMap(column =>

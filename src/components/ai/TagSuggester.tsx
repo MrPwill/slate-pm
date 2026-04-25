@@ -8,7 +8,7 @@ export function TagSuggester() {
   const { columns } = useBoardStore();
   const [suggestedTags, setSuggestedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   // Extract all card titles and details for analysis
   const cardTexts = columns.flatMap(column =>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
-import { parseAiResponse } from "@/lib/ai";
+
 
 export async function POST(request: Request) {
   try {
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
     // Prepare the prompt for summarization
     const commentsText = comments
-      .map((comment: any) => `${comment.user_name || 'Anonymous'}: ${comment.content}`)
+      .map((comment: { user_name?: string; content: string }) => `${comment.user_name || 'Anonymous'}: ${comment.content}`)
       .join('\n\n');
 
     const prompt = `

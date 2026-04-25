@@ -23,7 +23,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { BoardSettingsPanel } from "@/components/BoardSettingsPanel";
 import { EnhancedAiPanel } from "@/components/ai/EnhancedAiPanel";
 import { useBoardStore } from "@/store/useBoardStore";
-import { useBoards } from "@/hooks/useBoards";
+
 import type { Card, Column } from "@/types/board";
 
 type CardLookup = {
@@ -176,15 +176,6 @@ export function BoardApp() {
       { columnId: activeLookup.columnId, index: oldIndex },
       { columnId: activeLookup.columnId, index: newIndex },
     );
-  };
-
-  const handleBoardChange = (boardId: string | null) => {
-    setCurrentBoard(boardId);
-    if (boardId) {
-      loadBoardFromDb(boardId);
-    } else {
-      logoutUser();
-    }
   };
 
   const currentBoard = allBoards.find((b) => b.id === currentBoardId) || null;

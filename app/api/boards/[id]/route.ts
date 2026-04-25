@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import type { Board } from "@/types/board";
+
 
 export async function GET(
   request: Request,

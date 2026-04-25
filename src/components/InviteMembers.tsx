@@ -19,7 +19,7 @@ export function InviteMembers({
   const [role, setRole] = useState<"member" | "owner">("member");
   const [isInviting, setIsInviting] = useState(false);
   const supabase = useSupabase();
-  const { addMember } = useBoardStore();
+  const { addMember: _addMember } = useBoardStore();
 
   if (!isOpen) return null;
 
@@ -42,7 +42,7 @@ export function InviteMembers({
         return;
       }
 
-      const { data, error } = await supabase
+      const { data: _data, error } = await supabase
         .from("board_members")
         .insert({
           board_id: boardId,
@@ -64,9 +64,9 @@ export function InviteMembers({
       alert(`Invited ${userData.name} as member`);
       setEmail("");
       onOpenChange(false);
-    } catch (error) {
+    } catch (err) {
       alert("Failed to invite member");
-      console.error(error);
+      console.error(err);
     } finally {
       setIsInviting(false);
     }

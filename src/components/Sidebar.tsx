@@ -4,10 +4,10 @@ import { useState } from "react";
 import { BoardList } from "./BoardList";
 
 interface SidebarProps {
-  onBoardSettings: (boardId: string) => void;
+  onBoardSettings?: (boardId: string) => void;
 }
 
-export function Sidebar({ onBoardSettings }: SidebarProps) {
+export function Sidebar({ onBoardSettings: _onBoardSettings }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
