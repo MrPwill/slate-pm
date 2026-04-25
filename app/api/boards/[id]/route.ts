@@ -46,15 +46,18 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const { title, description } = await request.json();
+    const body = await request.json() as { title?: string; description?: string };
+    const { title, description } = body;
 
-    const { data, error } = await supabase
+    const updateData: Record<string, string> = {
+      updated_at: new Date().toISOString(),
+    };
+    if (title !== undefined) updateData.title = title;
+    if (description !== undefined) updateData.description = description;
+
+    const { data, error } = await (supabase as any)
       .from("boards")
-      .update({
-        title,
-        description,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("id", id)
       .select()
       .single();

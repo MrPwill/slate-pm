@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import type { Board } from "@/types/board";
 
 export async function GET(request: Request) {
   try {
@@ -9,8 +8,6 @@ export async function GET(request: Request) {
 
     let query;
     if (userId) {
-      // Use an inner join to board_members to find all boards the user is a part of.
-      // Since every owner is also a member, this covers both owned and shared boards.
       query = supabase.from("boards").select(`
         *,
         board_members!inner (*)
@@ -27,10 +24,10 @@ export async function GET(request: Request) {
     if (error) throw error;
 
     return NextResponse.json(data || []);
-  } catch (error: any) {
-    console.error("Error fetching boards:", error?.message || error);
+  } catch (error) {
+    console.error("Error fetching boards:", error);
     return NextResponse.json(
-      { error: "Failed to fetch boards", details: error?.message },
+      { error: "Failed to fetch boards" },
       { status: 500 }
     );
   }
@@ -38,8 +35,9 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { title, description } = await request.json();
-    const userId = "mock-user-id"; // In real app, get from auth
+    const body = await request.json() as { title?: string; description?: string };
+    const { title, description } = body;
+    const userId = "mock-user-id";
 
     if (!title) {
       return NextResponse.json(
@@ -48,7 +46,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("boards")
       .insert({
         owner_id: userId,
@@ -60,12 +58,13 @@ export async function POST(request: Request) {
 
     if (error) throw error;
 
-    // Add creator as owner
-    await supabase.from("board_members").insert({
-      board_id: data.id,
-      user_id: userId,
-      role: "owner",
-    });
+    await (supabase as any)
+      .from("board_members")
+      .insert({
+        board_id: data.id,
+        user_id: userId,
+        role: "owner",
+      });
 
     return NextResponse.json(data);
   } catch (error) {

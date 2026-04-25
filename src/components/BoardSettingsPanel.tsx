@@ -106,10 +106,9 @@ export function BoardSettingsPanel({
         return;
       }
 
-      alert(`Invited ${userData.name} as ${role}`);
+      alert(`Invited ${userData.name} as member`);
       setInviteEmail("");
-      setRole("member");
-      onOpenChange(false);
+      setIsInviteDialogOpen(false);
     } catch (error: any) {
       alert("Failed to invite member");
       console.error(error);

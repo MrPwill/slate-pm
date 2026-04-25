@@ -1,29 +1,21 @@
-import { forwardRef } from "react";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 
-interface ButtonProps {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "outline" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
-  className?: string;
-  children: React.ReactNode;
-  onClick?: () => void;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
 }
 
-export const Button = forwardRef(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { 
-      variant = "default", 
-      size = "default", 
-      className = "", 
-      children, 
-      onClick, 
-      type = "button",
-      disabled = false
+    {
+      variant = "default",
+      size = "default",
+      className = "",
+      children,
+      ...props
     }: ButtonProps,
     ref
   ) => {
-    // Variant classes
     const variantClasses = {
       default: "bg-primary text-primary-foreground hover:bg-primary/90",
       outline: "border border-input hover:bg-accent hover:text-accent-foreground",
@@ -31,7 +23,6 @@ export const Button = forwardRef(
       link: "text-muted-foreground hover:text-accent underline-offset-4 hover:underline",
     }[variant];
 
-    // Size classes
     const sizeClasses = {
       default: "h-10 py-2 px-4 text-sm",
       sm: "h-9 px-3 text-xs",
@@ -41,19 +32,18 @@ export const Button = forwardRef(
 
     return (
       <button
-        type={type}
+        type="button"
         className={`
-          flex items-center justify-center rounded-md text-sm font-medium 
-          transition-colors focus-visible:outline-none focus-visible:ring-2 
-          focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none 
+          flex items-center justify-center rounded-md text-sm font-medium
+          transition-colors focus-visible:outline-none focus-visible:ring-2
+          focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none
           disabled:opacity-50
-          ${variantClasses} 
+          ${variantClasses}
           ${sizeClasses}
           ${className}
         `}
         ref={ref}
-        onClick={onClick}
-        disabled={disabled}
+        {...props}
       >
         {children}
       </button>

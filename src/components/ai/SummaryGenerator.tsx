@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useBoardStore } from "@/store/useBoardStore";
 import { Button } from "@/components/common/Button";
-import { supabase } from "@/lib/supabase";
 
 export function SummaryGenerator() {
   const { columns } = useBoardStore();

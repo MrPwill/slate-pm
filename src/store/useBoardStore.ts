@@ -396,7 +396,7 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
       }),
     executeAiActions: (actions: AiAction[]) =>
       set((state) => {
-        let nextColumns = cloneColumns(state.columns);
+        const nextColumns = cloneColumns(state.columns);
 
         for (const action of actions) {
           if (action.action === "create" && action.title) {

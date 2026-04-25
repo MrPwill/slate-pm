@@ -61,12 +61,11 @@ export function InviteMembers({
         return;
       }
 
-      alert(`Invited ${userData.name} as ${role}`);
+      alert(`Invited ${userData.name} as member`);
       setEmail("");
-      setRole("member");
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error("Failed to invite member");
+    } catch (error) {
+      alert("Failed to invite member");
       console.error(error);
     } finally {
       setIsInviting(false);

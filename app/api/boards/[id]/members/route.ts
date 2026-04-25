@@ -58,7 +58,7 @@ export async function POST(
       .from("board_members")
       .select("id")
       .eq("board_id", id)
-      .eq("user_id", userData.id)
+      .eq("user_id", (userData as any).id)
       .single();
 
     if (!memberError && existingMember) {
@@ -73,9 +73,9 @@ export async function POST(
       .from("board_members")
       .insert({
         board_id: id,
-        user_id: userData.id,
+        user_id: (userData as any).id,
         role: role as "owner" | "member",
-      })
+      } as any)
       .select()
       .single();
 
