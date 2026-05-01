@@ -78,14 +78,29 @@ Slate PM follows a modern cloud-native architecture, utilizing a "local-first, s
 
 ### Directory Structure
 
-- app/: Next.js 15 App Router definitions and API endpoints.
-- src/components/: Modular React components categorized by domain (AI, Boards, Common, Layout).
-- src/hooks/: Custom React hooks for state, sync, and external service interactions.
-- src/lib/: Core utility logic including AI processing and Supabase client configurations.
-- src/store/: Centralized state management using Zustand.
-- src/types/: Domain-specific TypeScript interfaces and type definitions.
-- supabase/migrations/: Versioned SQL migration scripts for database schema evolution.
-- tests/: Comprehensive testing directory containing end-to-end specifications.
+```text
+slate-pm/
+├── app/                          # Next.js App Router
+│   ├── api/                      # API routes
+│   │   ├── boards/               # Board CRUD endpoints
+│   │   ├── cards/               # Card CRUD endpoints
+│   │   ├── columns/             # Column CRUD endpoints
+│   │   ├── generate-tasks/       # AI task generation endpoint
+│   │   └── summarize/           # AI conversation summarization endpoint
+│   ├── page.tsx                  # Landing/auth page
+│   ├── layout.tsx                # Root layout
+│   └── globals.css               # Global styles
+├── src/
+│   ├── components/               # Modular React components (AI, Boards, Common, Layout)
+│   ├── hooks/                   # Custom React hooks for state, sync, and services
+│   ├── lib/                     # Core utility logic and service configurations
+│   ├── store/                   # Centralized state management (Zustand)
+│   └── types/                   # Domain-specific TypeScript definitions
+├── supabase/
+│   └── migrations/              # Versioned SQL migration scripts
+└── tests/
+    └── e2e/                    # Comprehensive end-to-end specifications
+```
 
 ### Data Model and Security
 
