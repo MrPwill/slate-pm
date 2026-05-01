@@ -1,4 +1,6 @@
-import type { AiTask, AiTaskResponse, AiAction, Column } from "@/types/board";
+import type { AiTask, AiTaskResponse, AiAction, Column, CardComplexity } from "@/types/board";
+
+const VALID_COMPLEXITY = ['simple', 'medium', 'complex'];
 
 export function parseTaskTitles(content: string): AiTask[] {
   const lines = content.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -28,13 +30,23 @@ export function parseAiResponse(content: string): AiTaskResponse | null {
     const summary = parsed.summary?.trim();
     const tasks: AiTask[] = Array.isArray(parsed.tasks)
       ? parsed.tasks
-          .filter((task): task is { title: string; details: string } => 
+          .filter((task): task is AiTask => 
             typeof task === "object" && task !== null && typeof task.title === "string"
           )
-          .map((task) => ({
-            title: task.title.trim(),
-            details: task.details?.trim() || "",
-          }))
+          .map((task) => {
+            const complexity = typeof task.complexity === 'string' && VALID_COMPLEXITY.includes(task.complexity)
+              ? task.complexity as CardComplexity
+              : undefined;
+            const tags = Array.isArray(task.tags) 
+              ? task.tags.filter((t): t is string => typeof t === 'string').slice(0, 5)
+              : undefined;
+            return {
+              title: task.title.trim(),
+              details: task.details?.trim() || "",
+              complexity,
+              tags: tags && tags.length > 0 ? tags : undefined,
+            };
+          })
           .slice(0, 5)
       : [];
 

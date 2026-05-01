@@ -166,6 +166,152 @@ The project maintains a rigorous testing standard:
 - End-to-End Testing: `npm run test:e2e`
 - Full Suite: `npm run test`
 
+## How to Use
+
+### Account Setup
+
+1. Open the application in your browser
+2. Enter your email address and create a password
+3. Click "Sign Up" to create your account
+4. After registration, you are automatically signed in
+
+### Creating a Board
+
+1. After signing in, click the "Create Board" button in the sidebar
+2. Enter a title for your board (e.g., "Website Redesign", "Q2 Marketing")
+3. Optionally add a description to provide context
+4. Click "Create" to initialize the board
+5. The board is created with five default columns: Backlog, Todo, In Progress, Review, Done
+
+### Managing Tasks
+
+#### Creating Tasks
+
+1. Click the "+" button in any column header
+2. Enter a title for your task
+3. Optionally add details in the description field
+4. Press Enter or click away to save the task
+
+#### Moving Tasks
+
+1. Click and hold on any task card
+2. Drag the card to the desired column
+3. Release to drop the card in its new position
+4. Tasks can also be reordered within the same column
+
+#### Editing Tasks
+
+1. Click on a task card to open its details view
+2. Modify the title or description as needed
+3. Changes are saved automatically
+
+#### Deleting Tasks
+
+1. Open the task details
+2. Click the delete icon
+3. Confirm the deletion
+
+### Using AI Features
+
+#### Task Generation
+
+1. Open the AI Task Panel on the right side of the board
+2. Describe your project goal in natural language (e.g., "Build a user authentication system")
+3. Click "Generate Tasks"
+4. AI creates multiple actionable tasks and places them in the Backlog column
+5. Review, edit, or delete generated tasks as needed
+
+#### Conversation Summarization
+
+1. Select a task that has comments
+2. In the AI panel, click the "Summarize" tab
+3. Click "Generate Summary"
+4. AI analyzes all comments and provides a concise summary
+
+#### Tag Suggestions
+
+1. Select any task
+2. In the AI panel, click the "Tags" tab
+3. Click "Suggest Tags"
+4. AI suggests relevant categories based on task content
+
+#### Difficulty Estimation
+
+1. Select any task
+2. In the AI panel, click the "Difficulty" tab
+3. Click "Estimate"
+4. AI classifies the task as Simple, Medium, or Complex based on complexity analysis
+
+### Completing Tasks
+
+1. Drag a task from the "Review" column to the "Done" column
+2. The task is automatically archived to completed history
+3. Completed tasks appear in the Completed History panel for reference
+
+### Collaborating with Team Members
+
+#### Inviting Members
+
+1. Open the board settings (click the board title or settings icon)
+2. Navigate to the "Members" section
+3. Enter the email address of the person you want to invite
+4. Click "Invite"
+5. The invited user receives access to the board
+
+#### Managing Members
+
+- Board owners can remove members at any time
+- Members can leave a board through the settings panel
+- All board members have equal editing rights
+
+### Customizing Columns
+
+1. Click on a column title to edit it
+2. Type a new name (e.g., rename "In Progress" to "Development")
+3. Press Enter to save the new name
+
+## Data Storage
+
+### Database Schema
+
+The application uses PostgreSQL with the following core tables:
+
+| Table | Purpose |
+|-------|---------|
+| boards | Stores project board configurations and ownership |
+| board_members | Manages the many-to-many relationship between users and boards |
+| columns | Defines the structural segments of each board |
+| cards | Represents individual units of work |
+| comments | Threaded discussions associated with specific cards |
+| completed_records | Immutable archive of finished work |
+| profiles | Extends auth.users with application-specific metadata |
+
+### Row Level Security
+
+All data access is protected through Row Level Security (RLS) policies:
+
+- Users can only view boards they own or are members of
+- Only board owners can modify board settings and member permissions
+- Members can create, edit, and move cards within their boards
+- Completed records maintain a permanent history accessible to all board members
+
+### Local Fallback
+
+Board data is cached in localStorage to maintain functionality during intermittent connectivity. Changes sync to the cloud when connectivity is restored.
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| NEXT_PUBLIC_SUPABASE_URL | Your Supabase project URL | Yes |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Supabase anonymous key (anon) | Yes |
+| OPENROUTER_API_KEY | OpenRouter API key for AI features | Yes |
+
+### Obtaining Credentials
+
+1. **Supabase**: Create a project at supabase.com, then navigate to Settings > API to find your URL and anonymous key
+2. **OpenRouter**: Sign up at openrouter.ai, then create an API key in your dashboard
+
 ## License
 
 This project is licensed under the MIT License. Refer to the LICENSE file for comprehensive details.

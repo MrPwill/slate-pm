@@ -394,6 +394,8 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
                     id: crypto.randomUUID(),
                     title: task.title,
                     details: task.details,
+                    complexity: task.complexity,
+                    tags: task.tags,
                   })),
                 ],
               }
@@ -583,10 +585,28 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
       allCards: state.allCards.filter((c) => c.id !== cardId),
     })),
   addComment: (comment: DbComment) =>
-    set((state) => ({
-      ...state,
-      allComments: [...state.allComments, comment],
-    })),
+    set((state) => {
+      const newComment = {
+        id: comment.id,
+        user_id: comment.user_id,
+        user_name: "User",
+        content: comment.content,
+        created_at: comment.created_at,
+      };
+      const nextColumns = state.columns.map((column) => ({
+        ...column,
+        cards: column.cards.map((card) =>
+          card.id === comment.card_id
+            ? { ...card, comments: [...(card.comments || []), newComment] }
+            : card,
+        ),
+      }));
+      return {
+        ...state,
+        allComments: [...state.allComments, comment],
+        columns: nextColumns,
+      };
+    }),
   addCompletedRecord: (record: DbCompletedRecord) =>
     set((state) => ({
       ...state,
@@ -610,11 +630,25 @@ const createStoreState: StateCreator<BoardState> = (set, get) => ({
         description: col.description || undefined,
         cards: boardCards
           .filter((card) => card.column_id === col.id)
-          .map((card) => ({
-            id: card.id,
-            title: card.title,
-            details: card.details || "",
-          })),
+          .map((card) => {
+            const cardComments = state.allComments
+              .filter((c) => c.card_id === card.id)
+              .map((c) => ({
+                id: c.id,
+                user_id: c.user_id,
+                user_name: "User",
+                content: c.content,
+                created_at: c.created_at,
+              }));
+            return {
+              id: card.id,
+              title: card.title,
+              details: card.details || "",
+              complexity: card.complexity as Card['complexity'],
+              tags: card.tags || undefined,
+              comments: cardComments.length > 0 ? cardComments : undefined,
+            };
+          }),
       }));
       const completedRecords = state.allCompletedRecords.filter((r) => r.board_id === boardId);
       const newState = {

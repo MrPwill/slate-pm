@@ -33,20 +33,10 @@ export async function POST(request: Request) {
       .join('\n\n');
 
     const prompt = `
-Please summarize the following conversation from a Kanban board card discussion:
+Give me a brief 1-2 sentence status of this project.
 
-Card Details: ${cardDetails || 'No card details provided'}
-
-Comments:
-${commentsText}
-
-Provide a concise summary that captures:
-1. The main points discussed
-2. Any decisions made
-3. Action items or next steps mentioned
-4. Key questions or concerns raised
-
-Keep the summary focused and actionable for team members who need to quickly understand the discussion.
+Board: ${cardDetails || 'No card details'}
+Content: ${commentsText}
 `;
 
     const response = await client.chat.completions.create({
@@ -54,26 +44,31 @@ Keep the summary focused and actionable for team members who need to quickly und
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that summarizes conversations from project management discussions. Provide clear, concise summaries that capture the key points, decisions, and action items.",
+          content: "You are a helpful project assistant. Provide short, natural summaries.",
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      temperature: 0.3,
-      max_tokens: 500,
+      temperature: 0.7,
+      max_tokens: 200,
     });
 
     const content = response.choices[0]?.message?.content ?? "";
+    
+    if (!content?.trim()) {
+      throw new Error("AI returned empty response");
+    }
     
     return NextResponse.json({
       summary: content.trim(),
     });
   } catch (error) {
     console.error("Error generating summary:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to generate summary" },
+      { error: message },
       { status: 500 }
     );
   }

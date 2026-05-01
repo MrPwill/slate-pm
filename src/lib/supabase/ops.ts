@@ -141,7 +141,9 @@ export async function createCard(
   columnId: string,
   title: string,
   details?: string,
-  orderIndex?: number
+  orderIndex?: number,
+  complexity?: string,
+  tags?: string[]
 ): Promise<DbCard | null> {
   try {
     const newCard: DbCard = {
@@ -152,6 +154,8 @@ export async function createCard(
       order_index: orderIndex || 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      complexity: complexity || undefined,
+      tags: tags || undefined,
     };
 
     const { error } = await supabase.from('cards').insert([newCard]);

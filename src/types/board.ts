@@ -6,11 +6,15 @@ export type Comment = {
   created_at: string;
 };
 
+export type CardComplexity = 'simple' | 'medium' | 'complex';
+
 export type Card = {
   id: string;
   title: string;
   details: string;
   comments?: Comment[];
+  complexity?: CardComplexity;
+  tags?: string[];
 };
 
 export type Column = {
@@ -41,6 +45,8 @@ export type AiAction = {
 export type AiTask = {
   title: string;
   details: string;
+  complexity?: CardComplexity;
+  tags?: string[];
 };
 
 export type AiTaskResponse = {
@@ -111,6 +117,8 @@ export interface DbCard {
   order_index: number;
   created_at: string;
   updated_at: string;
+  complexity?: string;
+  tags?: string[];
 }
 
 export interface DbComment {

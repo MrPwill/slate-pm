@@ -170,6 +170,31 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-[var(--slate-navy)]">{card.title}</h3>
+            {(card.complexity || (card.tags && card.tags.length > 0)) && (
+              <div className="flex flex-wrap items-center gap-2">
+                {card.complexity && (
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
+                      card.complexity === "simple"
+                        ? "bg-green-100 text-green-700"
+                        : card.complexity === "medium"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {card.complexity}
+                  </span>
+                )}
+                {card.tags?.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="rounded-full bg-[var(--slate-blue)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--slate-blue)]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             <p className="whitespace-pre-line text-sm leading-6 text-[var(--slate-navy)]/58">{card.details || "No details"}</p>
             {!isOverlay ? (
               <div className="flex flex-wrap gap-1 pt-1">

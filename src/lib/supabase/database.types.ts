@@ -85,6 +85,8 @@ export interface Database {
           order_index: number
           created_at: string
           updated_at: string
+          complexity: string | null
+          tags: string[] | null
         }
         Insert: {
           id?: string
@@ -94,6 +96,8 @@ export interface Database {
           order_index?: number
           created_at?: string
           updated_at?: string
+          complexity?: string | null
+          tags?: string[] | null
         }
         Update: {
           id?: string
@@ -103,6 +107,8 @@ export interface Database {
           order_index?: number
           created_at?: string
           updated_at?: string
+          complexity?: string | null
+          tags?: string[] | null
         }
       }
       comments: {
