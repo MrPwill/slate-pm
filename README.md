@@ -1,122 +1,80 @@
 # Slate PM
 
-Slate PM is a collaborative Kanban project management application designed for focus and productivity. It combines a minimal, clean user interface with real-time collaboration and AI-powered features to streamline project workflows.
+Slate PM is a professional, collaborative Kanban project management application engineered for focus and high-performance teams. It integrates a refined, minimalist user interface with robust real-time synchronization and advanced AI-powered utilities to optimize project lifecycles.
 
-## Overview
+## Project Overview
 
-Slate PM organizes work into a five-column Kanban board:
+Slate PM structures workflows through a strategic five-column Kanban methodology:
 
-1. **Backlog** - Ideas and future work. New tasks land here, waiting to be prioritized.
-2. **Todo** - Ready to start. Tasks that are confirmed and queued for work.
-3. **In Progress** - Currently working on. Active tasks being executed.
-4. **Review** - Needs verification. Completed work awaiting a review pass.
-5. **Done** - Completed tasks. Archived and tracked in the completed history panel.
+1. Backlog: Repository for initial concepts and prospective work. All new tasks originate here before prioritization.
+2. Todo: Queue for tasks that have been verified and are ready for immediate execution.
+3. In Progress: Active workspace for tasks currently under development or execution.
+4. Review: Quality assurance stage for completed work requiring verification or peer review.
+5. Done: Terminal state for finished tasks. Once moved here, tasks are archived into the persistent completed history system.
 
-## Key Features
+## Core Features
 
-- **Kanban Board** - Drag-and-drop tasks across five columns (Backlog, Todo, In Progress, Review, Done) with smooth animations using dnd-kit
-- **Multi-Board Support** - Create and manage multiple independent project boards for different initiatives
-- **User Accounts** - Sign up and log in with email and password using Supabase Auth
-- **Completed History** - Every task moved to Done is archived with a timestamp and full details in a historical panel
-- **AI Task Generation** - Describe a project goal and AI generates actionable task cards distributed across columns
-- **AI Difficulty Estimation** - AI analyzes card content and estimates complexity (Simple, Medium, Complex)
-- **AI Tag Suggestions** - AI suggests relevant tags based on card content to help organize tasks
-- **AI Conversation Summarization** - Generate concise summaries of card comments and discussions via AI
-- **Card Comments** - Add discussion threads to any task card for team collaboration
-- **Board Member Invitations** - Invite other registered users to collaborate on boards with member access
-- **Column Renaming** - Customize column titles to fit your workflow
-- **Mobile Responsive** - Full UI works seamlessly on desktop and mobile devices
-- **Real-time Sync** - Changes sync instantly across sessions via Supabase Realtime
+- Advanced Kanban Interface: Fluid drag-and-drop task management utilizing the dnd-kit library for high-performance interactions.
+- Multi-Board Architecture: Support for independent project environments, enabling segregated management of diverse initiatives.
+- Secure Authentication: User identity management powered by Supabase Auth, supporting secure email/password credentialing.
+- Persistent Completed History: Automated archival system that tracks every completed task with precise timestamps and historical metadata.
+- Intelligent Task Generation: AI-driven workflow initialization where high-level project goals are transformed into granular, actionable task distributions.
+- AI Complexity Analysis: Automated difficulty estimation (Simple, Medium, Complex) based on task content and historical context.
+- Automated Categorization: Intelligent tag suggestions to maintain organizational hygiene and improve task discoverability.
+- Conversation Synthesis: AI-powered summarization of task-level discussions, providing quick context for collaborators.
+- Real-time Synchronization: Instantaneous state updates across all connected clients via Supabase Realtime protocols.
+- Collaborative Invitations: Granular access control allowing board owners to invite registered collaborators via secure email association.
+- Workflow Customization: User-defined column naming to adapt the Kanban structure to specific team requirements.
+- Responsive Design: Fully optimized interface for seamless operation across desktop, tablet, and mobile hardware.
 
 ## Technology Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript (strict mode, no `any` types)
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand with localStorage persistence
-- **Database & Auth**: Supabase (PostgreSQL + Auth)
-- **AI Engine**: OpenRouter API (OpenAI-compatible, using gpt-oss-120b model)
-- **Drag and Drop**: dnd-kit (@dnd-kit/core, @dnd-kit/sortable)
-- **Icons**: Lucide React
-- **Testing**: Vitest (unit tests) + Playwright (end-to-end tests)
+- Framework: Next.js 15 (utilizing the App Router architecture)
+- Language: TypeScript (Strict mode enforcement for type safety)
+- Styling: Tailwind CSS 4.0
+- State Management: Zustand with localStorage persistence and cloud synchronization
+- Backend Infrastructure: Supabase (PostgreSQL Database, Realtime Engine, and Authentication)
+- Artificial Intelligence: OpenRouter API (utilizing the gpt-oss-120b model)
+- Interaction Layer: dnd-kit (Core and Sortable modules)
+- Iconography: Lucide React
+- Testing Suite: Vitest (Unit and Integration) and Playwright (End-to-End)
 
-## Project Structure
+## Technical Architecture
 
-```
-slate-pm/
-├── app/                          # Next.js App Router
-│   ├── api/                      # API routes
-│   │   ├── boards/               # Board CRUD endpoints
-│   │   ├── cards/               # Card CRUD endpoints
-│   │   ├── columns/             # Column CRUD endpoints
-│   │   ├── generate-tasks/       # AI task generation endpoint
-│   │   └── summarize/           # AI conversation summarization endpoint
-│   ├── page.tsx                  # Landing/auth page
-│   ├── layout.tsx                # Root layout
-│   └── globals.css               # Global styles
-├── src/
-│   ├── components/               # React components
-│   │   ├── ai/                  # AI-related components
-│   │   ├── common/              # Shared UI components
-│   │   ├── layout/              # Layout components
-│   │   └── boards/              # Board-specific components
-│   ├── hooks/                   # Custom React hooks
-│   ├── lib/                     # Libraries and utilities
-│   │   ├── ai.ts                # AI response parsing
-│   │   ├── seed.ts              # Development seed data
-│   │   └── supabase/           # Supabase client, auth, operations
-│   ├── store/                   # Zustand stores
-│   └── types/                   # TypeScript type definitions
-├── supabase/
-│   └── migrations/              # Database migrations
-├── tests/
-│   └── e2e/                    # Playwright end-to-end tests
-├── package.json
-├── next.config.ts
-├── tailwind.config.ts
-├── vitest.config.ts
-├── playwright.config.ts
-└── tsconfig.json
-```
+### Directory Structure
 
-## Data Storage
+- app/: Next.js 15 App Router definitions and API endpoints.
+- src/components/: Modular React components categorized by domain (AI, Boards, Common, Layout).
+- src/hooks/: Custom React hooks for state, sync, and external service interactions.
+- src/lib/: Core utility logic including AI processing and Supabase client configurations.
+- src/store/: Centralized state management using Zustand.
+- src/types/: Domain-specific TypeScript interfaces and type definitions.
+- supabase/migrations/: Versioned SQL migration scripts for database schema evolution.
+- tests/: Comprehensive testing directory containing end-to-end specifications.
 
-All data is stored in Supabase (PostgreSQL):
+### Data Model and Security
 
-### Database Tables
+The application utilizes a relational PostgreSQL schema hosted on Supabase:
 
-- **auth.users** - User accounts via Supabase Auth (email/password)
-- **profiles** - User profile data (name, linked to auth.users)
-- **boards** - Project board metadata (title, description, owner)
-- **board_members** - User access and roles per board (owner/member)
-- **columns** - Board columns with ordering and titles
-- **cards** - Individual task cards with title, details, order
-- **comments** - Discussion comments on cards
-- **completed_records** - Archived completed tasks with timestamps
+- profiles: Extends auth.users with application-specific metadata.
+- boards: Stores project board configurations and ownership.
+- board_members: Manages the many-to-many relationship between users and boards with role-based access.
+- columns: Defines the structural segments of each board.
+- cards: Represents individual units of work with associated metadata and ordering.
+- comments: Threaded discussions associated with specific cards.
+- completed_records: Immutable archive of finished work.
 
-### Local State
+Security is enforced at the database level using Row Level Security (RLS) policies, ensuring that users can only interact with data they are explicitly authorized to access.
 
-Zustand with localStorage persistence handles:
-- Active board columns and cards in-memory
-- Current user session state
-- Completed history records
+## Installation and Deployment
 
-### Security
+### System Requirements
 
-Row Level Security (RLS) policies ensure:
-- Users can only access boards they own or are members of
-- Owners can modify board settings and members
-- Members can view and edit cards/columns within their boards
+- Node.js 18.0.0 or higher
+- Supabase Project Instance
+- OpenRouter API Credentials
 
-## Installation
-
-### Prerequisites
-
-- Node.js 18 or higher
-- A Supabase project (free tier works)
-- An OpenRouter API key (for AI features)
-
-### Setup
+### Local Setup
 
 1. Clone the repository:
    ```bash
@@ -129,111 +87,35 @@ Row Level Security (RLS) policies ensure:
    npm install
    ```
 
-3. Create a `.env.local` file in the root directory:
+3. Configure environment variables in a `.env.local` file:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    OPENROUTER_API_KEY=your_openrouter_api_key
    ```
 
-4. Apply the Supabase migration `supabase/migrations/20260424000000_initial_schema.sql` in your Supabase SQL Editor. This creates all required tables, indexes, security functions, and RLS policies.
+4. Initialize the database:
+   Execute the migration scripts located in `supabase/migrations/` within the Supabase SQL Editor to establish the schema and RLS policies.
 
-5. (Optional) Apply the profiles migration `supabase/migrations/20260426000000_profiles_table.sql` if you need user profile support.
-
-6. Start the development server:
+5. Execute the development environment:
    ```bash
    npm run dev
    ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+### Production Deployment
 
-**Production URL**: [https://slate-pm.vercel.app/](https://slate-pm.vercel.app/)
+The application is optimized for deployment on Vercel. Ensure that the Supabase Site URL and Redirect URLs are correctly configured in the Supabase Authentication dashboard to match your production domain.
 
-## Usage
+Production URL: https://slate-pm.vercel.app/
 
-### Account
+## Quality Assurance
 
-1. Create an account with your name, email, and password using the signup form
-2. Log in to access your boards and completed history
-3. Accounts are stored securely in Supabase and accessible from any device
+The project maintains a rigorous testing standard:
 
-### Boards
-
-1. Click the "New Board" button in the sidebar to create a project
-2. Enter a title and description for your board
-3. Your board appears in the sidebar navigation. Click to switch between boards
-4. Click the board menu (three dots) to access settings, rename, or delete
-
-### Tasks
-
-1. Click the "+" button in any column header to add a task card
-2. Enter a title and details for the task
-3. Drag cards between columns to update their status
-4. Use the card menu to edit details, delete, or view comments
-5. Click on a card to open it for more details and add comments
-
-### Columns
-
-1. Click on a column title to rename it
-2. Columns maintain their custom names across sessions
-
-### Completion
-
-1. Drag a card from any column to the Done column
-2. The card is archived with a timestamp in the Completed History panel
-3. Click "History" in the sidebar to view completed tasks over time
-
-### AI Features
-
-1. **Generate Tasks** - Enter a goal description in the AI task panel and click "Generate Tasks". AI creates task cards distributed across your columns based on your input
-2. **Estimate Difficulty** - Open any card and click "Estimate Difficulty" to analyze its complexity
-3. **Suggest Tags** - Open any card and click "Suggest Tags" to get automated label recommendations
-4. **Summarize** - On cards with multiple comments, click "Summarize" to generate a conversation summary
-
-### Inviting Members
-
-1. Open the Board Settings panel (via board menu)
-2. Enter the email address of a registered user to invite them
-3. They receive member access and can view and edit the board
-
-## Running Tests
-
-```bash
-npm run test:unit    # Unit tests (Vitest)
-npm run test:e2e     # End-to-end tests (Playwright)
-npm run test         # Run all tests
-```
-
-## Deployment
-
-The app deploys to Vercel. Push to the main branch or connect your GitHub repository to Vercel for automatic deployments.
-
-### Supabase Configuration for Vercel
-
-In your Supabase dashboard under Authentication > URL Configuration:
-
-- **Site URL**: Set to your Vercel deployment URL (e.g., `https://your-app.vercel.app`)
-- **Redirect URLs**: Add your Vercel URL with `/**` wildcard (e.g., `https://your-app.vercel.app/**`)
-
-This ensures Supabase Auth redirects work from your deployed site.
-
-### Build Configuration
-
-For Vercel deployment, the following build settings are used:
-- Framework Preset: Next.js
-- Build Command: `next build` (default)
-- Output Directory: `.next` (default)
-
-The `next.config.ts` is configured with `output: 'standalone'` for optimized production builds.
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
-| `OPENROUTER_API_KEY` | OpenRouter API key for AI features | Yes (AI features won't work without it) |
+- Unit Testing: `npm run test:unit`
+- End-to-End Testing: `npm run test:e2e`
+- Full Suite: `npm run test`
 
 ## License
 
-MIT License - See LICENSE file for details.
+This project is licensed under the MIT License. Refer to the LICENSE file for comprehensive details.
