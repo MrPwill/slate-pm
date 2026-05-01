@@ -39,6 +39,41 @@ Slate PM structures workflows through a strategic five-column Kanban methodology
 - Iconography: Lucide React
 - Testing Suite: Vitest (Unit and Integration) and Playwright (End-to-End)
 
+## System Architecture
+
+Slate PM follows a modern cloud-native architecture, utilizing a "local-first, sync-later" approach to ensure a responsive user experience with robust data persistence.
+
+```text
++-----------------------------------------------------------------------+
+|                          Next.js Frontend (App Router)                |
+|  +--------------+        +--------------+        +-----------------+  |
+|  |  Sidebar     |        |  Kanban Board|        |  Settings Panel |  |
+|  |  Navigation  | <----> |  Workspace   | <----> |  Management     |  |
+|  +--------------+        +--------------+        +-----------------+  |
+|                                 ^                                     |
+|                                 |                                     |
+|                        +------------------+                           |
+|                        |  Zustand Store   |                           |
+|                        |  (Client State)  |                           |
+|                        +---------+--------+                           |
++----------------------------------|------------------------------------+
+                                   |
+          +------------------------+------------------------+
+          |                        |                        |
++---------v---------+    +---------v---------+    +---------v---------+
+|     Supabase      |    |    OpenRouter     |    |   localStorage    |
+|   (PostgreSQL +   |    |    (AI Engine)    |    |    (Offline       |
+|    Realtime)      |    |                   |    |     Fallback)     |
++-------------------+    +-------------------+    +-------------------+
+```
+
+### Architectural Principles
+
+- Unified State Management: Zustand serves as the single source of truth for the client application, orchestrating updates between the UI and external services.
+- Real-time Convergence: Changes are propagated across clients using Supabase Realtime, enabling seamless collaboration without manual refreshes.
+- Local-First Persistence: Critical board data is cached in localStorage to maintain functionality during intermittent connectivity.
+- Decoupled AI Logic: AI features are implemented as stateless operations via OpenRouter, allowing for flexible model selection and high-performance task generation.
+
 ## Technical Architecture
 
 ### Directory Structure
