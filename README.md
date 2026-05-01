@@ -91,6 +91,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
+**Live Demo**: [https://slate-pm.vercel.app/](https://slate-pm.vercel.app/)
+
 ## Usage
 
 ### Account
