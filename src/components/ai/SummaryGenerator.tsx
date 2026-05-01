@@ -84,7 +84,7 @@ export function SummaryGenerator() {
       </div>
 
       {!summary && !loading && (
-        <div className="p-4 bg-gray-50 border border-gray-200 rounded min-h-[80px] flex items-center justify-center text-gray-400">
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded min-h-20 flex items-center justify-center text-gray-400">
           {isCommentBased 
             ? "Click 'Generate Summary' to create a summary of all comments on this board"
             : "Click 'Generate Summary' to create an overview of your board's content"}

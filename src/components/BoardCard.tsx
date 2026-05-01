@@ -128,7 +128,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
   return (
     <article
       data-card-id={card.id}
-      className={`group rounded-[1.35rem] border border-white/55 bg-[var(--slate-card)] p-4 shadow-[0_18px_40px_rgba(6,15,70,0.18)] transition duration-200 ease-in-out hover:scale-[1.015] hover:bg-[var(--slate-card-hover)] ${
+      className={`group rounded-[1.35rem] border border-white/55 bg-(--slate-card) p-4 shadow-[0_18px_40px_rgba(6,15,70,0.18)] transition duration-200 ease-in-out hover:scale-[1.015] hover:bg-(--slate-card-hover) ${
         isOverlay ? "shadow-[0_28px_70px_rgba(6,15,70,0.28)]" : ""
       }`}
     >
@@ -136,26 +136,26 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
         <form className="space-y-3" onSubmit={handleSave}>
           <input
             aria-label={`Edit title for ${card.title}`}
-            className="w-full rounded-xl border border-[rgba(8,17,79,0.12)] bg-white/80 px-3 py-2 text-sm font-semibold text-[var(--slate-navy)] outline-none transition focus:border-[var(--slate-blue)]"
+            className="w-full rounded-xl border border-[rgba(8,17,79,0.12)] bg-white/80 px-3 py-2 text-sm font-semibold text-(--slate-navy) outline-none transition focus:border-(--slate-blue)"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
           <textarea
             aria-label={`Edit details for ${card.title}`}
-            className="min-h-20 w-full rounded-xl border border-[rgba(8,17,79,0.12)] bg-white/80 px-3 py-2 text-sm text-[var(--slate-navy)] outline-none transition focus:border-[var(--slate-blue)]"
+            className="min-h-20 w-full rounded-xl border border-[rgba(8,17,79,0.12)] bg-white/80 px-3 py-2 text-sm text-(--slate-navy) outline-none transition focus:border-(--slate-blue)"
             value={details}
             onChange={(event) => setDetails(event.target.value)}
           />
           <div className="flex gap-2">
             <button
               type="submit"
-              className="rounded-full bg-[var(--slate-navy)] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[var(--slate-navy-soft)]"
+              className="rounded-full bg-(--slate-navy) px-3 py-2 text-xs font-semibold text-white transition hover:bg-(--slate-navy-soft)"
             >
               Update
             </button>
             <button
               type="button"
-              className="rounded-full border border-[rgba(8,17,79,0.12)] px-3 py-2 text-xs font-semibold text-[var(--slate-navy)]/60 transition hover:bg-[rgba(8,17,79,0.06)]"
+              className="rounded-full border border-[rgba(8,17,79,0.12)] px-3 py-2 text-xs font-semibold text-(--slate-navy)/60 transition hover:bg-[rgba(8,17,79,0.06)]"
               onClick={() => {
                 setTitle(card.title);
                 setDetails(card.details);
@@ -169,7 +169,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
       ) : (
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-[var(--slate-navy)]">{card.title}</h3>
+            <h3 className="text-sm font-semibold text-(--slate-navy)">{card.title}</h3>
             {(card.complexity || (card.tags && card.tags.length > 0)) && (
               <div className="flex flex-wrap items-center gap-2">
                 {card.complexity && (
@@ -188,20 +188,20 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
                 {card.tags?.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="rounded-full bg-[var(--slate-blue)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--slate-blue)]"
+                    className="rounded-full bg-(--slate-blue)/10 px-2 py-0.5 text-[10px] font-medium text-(--slate-blue)"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
             )}
-            <p className="whitespace-pre-line text-sm leading-6 text-[var(--slate-navy)]/58">{card.details || "No details"}</p>
+            <p className="whitespace-pre-line text-sm leading-6 text-(--slate-navy)/58">{card.details || "No details"}</p>
             {!isOverlay ? (
               <div className="flex flex-wrap gap-1 pt-1">
                 <button
                   type="button"
                   aria-label={`Move up ${card.title}`}
-                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-[var(--slate-navy)]/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-navy)]"
+                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-(--slate-navy)/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-navy)"
                   onClick={() => moveWithinColumn(-1)}
                 >
                   Up
@@ -209,7 +209,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
                 <button
                   type="button"
                   aria-label={`Move down ${card.title}`}
-                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-[var(--slate-navy)]/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-navy)]"
+                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-(--slate-navy)/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-navy)"
                   onClick={() => moveWithinColumn(1)}
                 >
                   Down
@@ -217,7 +217,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
                 <button
                   type="button"
                   aria-label={`Move left ${card.title}`}
-                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-[var(--slate-navy)]/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-navy)]"
+                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-(--slate-navy)/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-navy)"
                   onClick={() => moveToAdjacentColumn(-1)}
                 >
                   Left
@@ -225,7 +225,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
                 <button
                   type="button"
                   aria-label={`Move right ${card.title}`}
-                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-[var(--slate-navy)]/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-navy)]"
+                  className="rounded-full px-2 py-1 text-[11px] font-semibold text-(--slate-navy)/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-navy)"
                   onClick={() => moveToAdjacentColumn(1)}
                 >
                   Right
@@ -239,7 +239,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
                 <button
                   type="button"
                   aria-label={`Split ${card.title}`}
-                  className="rounded-full px-2 py-1 text-xs font-semibold text-[var(--slate-blue)] transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-blue)]"
+                  className="rounded-full px-2 py-1 text-xs font-semibold text-(--slate-blue) transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-blue)"
                   onClick={handleSplit}
                 >
                   Split
@@ -248,7 +248,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
               <button
                 type="button"
                 aria-label={`Edit ${card.title}`}
-                className="rounded-full px-2 py-1 text-xs font-semibold text-[var(--slate-navy)]/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-navy)]"
+                className="rounded-full px-2 py-1 text-xs font-semibold text-(--slate-navy)/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-navy)"
                 onClick={() => setIsEditing(true)}
               >
                 Edit
@@ -256,7 +256,7 @@ export function BoardCard({ card, columnId, isOverlay = false }: BoardCardProps)
               <button
                 type="button"
                 aria-label={`Delete ${card.title}`}
-                className="rounded-full px-2 py-1 text-xs font-semibold text-[var(--slate-navy)]/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-[var(--slate-navy)]"
+                className="rounded-full px-2 py-1 text-xs font-semibold text-(--slate-navy)/42 transition hover:bg-[rgba(8,17,79,0.08)] hover:text-(--slate-navy)"
                 onClick={() => deleteCard(columnId, card.id)}
               >
                 Delete
