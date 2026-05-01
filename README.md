@@ -2,10 +2,6 @@
 
 Slate PM is a collaborative Kanban project management application designed for focus and productivity. It combines a minimal, clean user interface with real-time collaboration and AI-powered features to streamline project workflows.
 
-## Live Demo
-
-**Production URL**: [https://slate-pm.vercel.app/](https://slate-pm.vercel.app/)
-
 ## Overview
 
 Slate PM organizes work into a five-column Kanban board:
@@ -150,6 +146,8 @@ Row Level Security (RLS) policies ensure:
    ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+**Production URL**: [https://slate-pm.vercel.app/](https://slate-pm.vercel.app/)
 
 ## Usage
 
